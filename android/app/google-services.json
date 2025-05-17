@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "741335584680",
+    "project_id": "reuse-mart-53b03",
+    "storage_bucket": "reuse-mart-53b03.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:741335584680:android:588af80dba00808e2b579d",
+        "android_client_info": {
+          "package_name": "com.example.reuse_mart_mobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDxrhLi8Ws9KzkLFZGZHVw0YzaxE26vqSs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
