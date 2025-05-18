@@ -1,13 +1,18 @@
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:reuse_mart_mobile/view/notification-screen.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  await _initializeLocalNotifications();
   await _requestPermission();
 
   runApp(const MyApp());
@@ -16,7 +21,28 @@ void main() async {
   _checkInitialMessage();
 
   final token = await FirebaseMessaging.instance.getToken();
-  print('Token: $token');
+  print('FCM Token: $token');
+}
+
+Future<void> _initializeLocalNotifications() async {
+  const AndroidInitializationSettings initializationSettingsAndroid =
+      AndroidInitializationSettings('ic_stat_reusemart');
+
+  const InitializationSettings initializationSettings = InitializationSettings(
+    android: initializationSettingsAndroid,
+  );
+
+  await flutterLocalNotificationsPlugin.initialize(
+    initializationSettings,
+    onDidReceiveNotificationResponse: (NotificationResponse response) {
+      navigatorKey.currentState?.push(
+        MaterialPageRoute(
+          builder:
+              (context) => NotificationScreen(message: response.payload ?? ""),
+        ),
+      );
+    },
+  );
 }
 
 Future<void> _requestPermission() async {
@@ -24,25 +50,17 @@ Future<void> _requestPermission() async {
 
   NotificationSettings settings = await messaging.requestPermission(
     alert: true,
-    announcement: false,
     badge: true,
-    carPlay: false,
-    criticalAlert: false,
-    provisional: false,
     sound: true,
   );
 
-  if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-    print('User mengizinkan notifikasi');
-  } else {
-    print('User tidak mengizinkan notifikasi');
-  }
+  print('Authorization status: ${settings.authorizationStatus}');
 }
 
 void _setupFCMListeners() {
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
     if (message.notification != null) {
-      _showForegroundDialog(
+      _showForegroundNotification(
         message.notification!.title,
         message.notification!.body,
       );
@@ -54,27 +72,44 @@ void _setupFCMListeners() {
   });
 }
 
-_showForegroundDialog(String? title, String? body) {
-  showDialog(
-    context: navigatorKey.currentContext!,
-    barrierDismissible: false,
-    builder: (context) {
-      return AlertDialog(title: Text(title ?? ""), content: Text(body ?? ""));
-    },
+Future<void> _showForegroundNotification(String? title, String? body) async {
+  const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
+    'reusemart_channel',
+    'ReuseMart Notifications',
+    channelDescription: 'Channel for ReuseMart push notifications',
+    importance: Importance.max,
+    priority: Priority.high,
+    icon: 'ic_stat_reusemart',
+    color: Color(0xFF4CAF50),
+    colorized: true,
+  );
+
+  const NotificationDetails notificationDetails = NotificationDetails(
+    android: androidDetails,
+  );
+
+  await flutterLocalNotificationsPlugin.show(
+    0,
+    title ?? 'Notifikasi',
+    body ?? '',
+    notificationDetails,
+    payload: body ?? '',
   );
 }
 
 void _handleMessage(RemoteMessage message) {
   navigatorKey.currentState?.push(
     MaterialPageRoute(
-      builder: (context) =>
-          NotificationScreen(message: message.notification?.body ?? ""),
+      builder:
+          (context) =>
+              NotificationScreen(message: message.notification?.body ?? ''),
     ),
   );
 }
 
 void _checkInitialMessage() async {
-  RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
+  RemoteMessage? initialMessage =
+      await FirebaseMessaging.instance.getInitialMessage();
 
   if (initialMessage != null) {
     _handleMessage(initialMessage);
@@ -88,11 +123,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       navigatorKey: navigatorKey,
-      title: 'Flutter Demo',
+      title: 'ReuseMart',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
+        useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'ReuseMart Home Page'),
     );
   }
 }
@@ -105,18 +141,8 @@ class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(title),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('You have pushed the button this many times:'),
-          ],
-        ),
-      ),
+      appBar: AppBar(title: Text(title)),
+      body: const Center(child: Text('Selamat datang di ReUseMart!')),
     );
   }
 }
