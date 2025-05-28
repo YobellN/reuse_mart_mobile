@@ -9,17 +9,18 @@ class AuthService {
       'password': password,
     };
     var body = json.encode(data);
-    var url = Uri.parse('${baseURL}login');
+    var url = Uri.parse('${baseURL}loginMobile');
     http.Response response = await http.post(
       url,
       headers: headers,
       body: body,
     );
-    if (response.statusCode == 200) {
-      print(response.body);
+    // ku ubah biar muncul errornya sekalian
+    // if (response.statusCode == 200) {
       return response;
-    } else {
-      throw Exception('Failed to login');
-    }
+    // } 
+    // else {
+    //   throw Exception('Failed to login');
+    // }
   }
 }

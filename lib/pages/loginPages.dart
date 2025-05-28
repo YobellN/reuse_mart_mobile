@@ -47,10 +47,17 @@ class _LoginPageState extends State<LoginPage> {
       Map responseMap = jsonDecode(response.body);
       if (response.statusCode == 200) {
         print("login berhasil");
-      } else {
-        if (mounted) {
-          errorSnackBar(context, responseMap.values.first[0]);
+      } else { // error merah bawah
+        final errors = responseMap['errors'];
+        String message;
+        if (errors is String) {
+          message = errors;
+        } else if (errors is Map) {
+          message = errors.values.first[0];
+        } else {
+          message = responseMap['message'] ?? 'Terjadi kesalahan';
         }
+        errorSnackBar(context, message);
       }
     }
   }
