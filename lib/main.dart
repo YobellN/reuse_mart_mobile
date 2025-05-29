@@ -58,9 +58,12 @@ void main() async {
   _checkInitialMessage();
 
   final fcmToken = await FirebaseMessaging.instance.getToken();
+  // biar bisa di post/update waktu login
+  if (fcmToken != null) {
+    await prefs.setString('fcmToken', fcmToken);
+  }
   print('FCM Token: $fcmToken');
 }
-
 
 Future<void> _initializeLocalNotifications() async {
   const AndroidInitializationSettings initializationSettingsAndroid =
@@ -162,7 +165,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       initialRoute: initialRoute,
-      routes: { // Pembeli, Penitip, Kurir, Hunter
+      routes: {
+        // Pembeli, Penitip, Kurir, Hunter
         '/login': (_) => LoginPage(),
         '/penitipHome': (_) => PenitipHomePage(),
         '/pembeliHome': (_) => PembeliHomePage(),

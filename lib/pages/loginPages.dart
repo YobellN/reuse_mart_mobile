@@ -42,15 +42,15 @@ class _LoginPageState extends State<LoginPage> {
         errorSnackBar(context, "Password is nota valid");
       }
     } else {
-      http.Response response = await AuthService.Login(
+      final prefs = await SharedPreferences.getInstance();
+      http.Response response = await AuthService.login(
         emailController.text,
         passwordController.text,
+        prefs.getString('fcmToken')!,
       );
       Map responseMap = jsonDecode(response.body);
       if (response.statusCode == 200) {
-        final prefs = await SharedPreferences.getInstance();
         final data = responseMap['data'];
-
         await prefs.setString('token', data['access_token']);
         await prefs.setString('nama', data['user']['nama']);
         await prefs.setString('role', data['user']['role']);
@@ -101,7 +101,7 @@ class _LoginPageState extends State<LoginPage> {
               // Email field
               InputLoginForm(
                 controller: emailController,
-                hintText: 'YourMail@mail.com',
+                hintText: 'youremail@mail.com',
                 obsecureText: false,
               ),
 
