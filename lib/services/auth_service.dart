@@ -16,7 +16,6 @@ class AuthService {
       body: body,
     );
     if (response.statusCode == 200) {
-      print(response.body);
       return response;
     } else {
       throw Exception('Failed to login');
