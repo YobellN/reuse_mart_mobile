@@ -74,7 +74,6 @@ class _LoginPageState extends State<LoginPage> {
         if (mounted) {
           errorSnackBar(context, responseMap.values.first[0]);
         }
-        errorSnackBar(context, message);
       }
     }
   }
