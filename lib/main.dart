@@ -2,8 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:reuse_mart_mobile/pages/loginPages.dart';
 import 'package:reuse_mart_mobile/view/notification-screen.dart';
+
+import 'package:shared_preferences/shared_preferences.dart';
+
+// PAGES
+import 'package:reuse_mart_mobile/pages/hunterHomePages.dart';
+import 'package:reuse_mart_mobile/pages/kurirHomePages.dart';
+import 'package:reuse_mart_mobile/pages/loginPages.dart';
+import 'package:reuse_mart_mobile/pages/pembeliHomePages.dart';
+import 'package:reuse_mart_mobile/pages/penitipHomePages.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -15,15 +23,44 @@ void main() async {
   await Firebase.initializeApp();
   await _initializeLocalNotifications();
   await _requestPermission();
-
-  runApp(const MyApp());
-
   _setupFCMListeners();
+
+  // Ambil shared preferences
+  final prefs = await SharedPreferences.getInstance();
+  final tokenUser = prefs.getString('token');
+  final role = prefs.getString('role');
+
+  // Tentukan initial route
+  String initialRoute;
+  if (tokenUser != null) {
+    switch (role) {
+      case 'Penitip':
+        initialRoute = '/penitipHome';
+        break;
+      case 'Pembeli':
+        initialRoute = '/pembeliHome';
+        break;
+      case 'Kurir':
+        initialRoute = '/kurirHome';
+        break;
+      case 'Hunter':
+        initialRoute = '/hunterHome';
+        break;
+      default:
+        initialRoute = '/login';
+    }
+  } else {
+    initialRoute = '/login';
+  }
+
+  runApp(MyApp(initialRoute: initialRoute));
+
   _checkInitialMessage();
 
-  final token = await FirebaseMessaging.instance.getToken();
-  print('FCM Token: $token');
+  final fcmToken = await FirebaseMessaging.instance.getToken();
+  print('FCM Token: $fcmToken');
 }
+
 
 Future<void> _initializeLocalNotifications() async {
   const AndroidInitializationSettings initializationSettingsAndroid =
@@ -118,33 +155,26 @@ void _checkInitialMessage() async {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final String initialRoute;
+  const MyApp({super.key, required this.initialRoute});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      initialRoute: initialRoute,
+      routes: { // Pembeli, Penitip, Kurir, Hunter
+        '/login': (_) => LoginPage(),
+        '/penitipHome': (_) => PenitipHomePage(),
+        '/pembeliHome': (_) => PembeliHomePage(),
+        '/kurirHome': (_) => KurirHomePage(),
+        '/hunterHome': (_) => HunterHomePage(),
+      },
       navigatorKey: navigatorKey,
       title: 'ReuseMart',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'ReuseMart Home Page'),
-    );
-  }
-}
-
-class MyHomePage extends StatelessWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(title)),
-      // body: const Center(child: Text('Selamat datang di ReUseMart!')),
-      body: LoginPage(),
     );
   }
 }

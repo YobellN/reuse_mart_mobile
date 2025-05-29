@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:reuse_mart_mobile/Components/loginPageComponent/button-login.dart';
 import 'package:reuse_mart_mobile/Components/loginPageComponent/input-login.dart';
 import 'package:reuse_mart_mobile/services/auth_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key? key}) : super(key: key);
@@ -30,14 +31,15 @@ class _LoginPageState extends State<LoginPage> {
     bool emailValid = RegExp(
       r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+",
     ).hasMatch(emailController.text);
-    bool passwordValid = passwordController.text.length > 4;
+    bool passwordValid =
+        passwordController.text.length >= 5; // karena pass nya 12345
 
     if (!emailValid || !passwordValid) {
       if (!emailValid) {
-        print("Email is not valid");
+        errorSnackBar(context, "Email is not valid");
       }
       if (!passwordValid) {
-        print("Password is nota valid");
+        errorSnackBar(context, "Password is nota valid");
       }
     } else {
       http.Response response = await AuthService.Login(
@@ -46,16 +48,31 @@ class _LoginPageState extends State<LoginPage> {
       );
       Map responseMap = jsonDecode(response.body);
       if (response.statusCode == 200) {
-        print("login berhasil");
-      } else { // error merah bawah
-        final errors = responseMap['errors'];
-        String message;
-        if (errors is String) {
-          message = errors;
-        } else if (errors is Map) {
-          message = errors.values.first[0];
-        } else {
-          message = responseMap['message'] ?? 'Terjadi kesalahan';
+        final prefs = await SharedPreferences.getInstance();
+        final data = responseMap['data'];
+
+        await prefs.setString('token', data['access_token']);
+        await prefs.setString('nama', data['user']['nama']);
+        await prefs.setString('role', data['user']['role']);
+
+        // Pindah ke halaman sesuai role: Pembeli, Penitip, Kurir, Hunter
+        String role = data['user']['role'];
+        if (mounted) {
+          if (role == 'Penitip') {
+            Navigator.pushReplacementNamed(context, '/penitipHome');
+          } else if (role == 'Pembeli') {
+            Navigator.pushReplacementNamed(context, '/pembeliHome');
+          } else if (role == 'Kurir') {
+            Navigator.pushReplacementNamed(context, '/kurirHome');
+          } else if (role == 'Hunter') {
+            Navigator.pushReplacementNamed(context, '/hunterHome');
+          } else {
+            Navigator.pushReplacementNamed(context, '/login');
+          }
+        }
+      } else {
+        if (mounted) {
+          errorSnackBar(context, responseMap.values.first[0]);
         }
         errorSnackBar(context, message);
       }
