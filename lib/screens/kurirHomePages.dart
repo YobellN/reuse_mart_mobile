@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:reuse_mart_mobile/pages/loginPages.dart';
+import 'package:reuse_mart_mobile/screens/loginPages.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class KurirHomePage extends StatelessWidget {
