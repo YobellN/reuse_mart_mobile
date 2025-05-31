@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:reuse_mart_mobile/screens/catalogue/cataloguePage.dart';
+import 'package:reuse_mart_mobile/screens/catalogue/katalog_page.dart';
 import 'package:reuse_mart_mobile/screens/informasi_umum/informasiPage.dart';
 import 'package:reuse_mart_mobile/screens/profile/profilePage.dart';
 import 'package:reuse_mart_mobile/utils/app_theme.dart';
@@ -16,7 +16,7 @@ class _HomePageState extends State<HomePage> {
 
   static const List<Widget> _pages = <Widget>[
     InformasiPage(),
-    CataloguePage(),
+    KatalogPage(),
     Center(child: Text('Riwayat', style: AppTextStyles.heading2)),
     ProfilePage(email: "ZtJLH@example.com", name: "John Doe", role: "Hunter", photoUrl: "https://i.pravatar.cc/300?img=1",)
   ];

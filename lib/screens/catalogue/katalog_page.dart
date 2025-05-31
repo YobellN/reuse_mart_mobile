@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:reuse_mart_mobile/models/produk.dart';
+import 'package:reuse_mart_mobile/screens/catalogue/detail_produk_page.dart';
 import 'package:reuse_mart_mobile/services/product_service.dart';
 import 'package:reuse_mart_mobile/utils/api.dart';
 import 'package:reuse_mart_mobile/utils/app_theme.dart';
 
-class CataloguePage extends StatefulWidget {
-  const CataloguePage({super.key});
+class KatalogPage extends StatefulWidget {
+  const KatalogPage({super.key});
 
   @override
-  State<CataloguePage> createState() => _CataloguePageState();
+  State<KatalogPage> createState() => _KatalogPageState();
 }
 
-class _CataloguePageState extends State<CataloguePage> {
+class _KatalogPageState extends State<KatalogPage> {
   final TextEditingController _searchController = TextEditingController();
   String _selectedCategory = 'Semua';
 
   final List<String> _categories = [
     'Semua',
-    'Buku, Alat Tulis, & Peralatan Sekolah',
     'Elektronik & Gadget',
     'Hobi, Mainan, & Koleksi',
     'Kosmetik & Perawatan Diri',
@@ -27,6 +27,7 @@ class _CataloguePageState extends State<CataloguePage> {
     'Peralatan Kantor & Industri',
     'Perlengkapan Bayi & Anak',
     'Perlengkapan Taman & Outdoor',
+    'Buku, Alat Tulis, & Peralatan Sekolah',
   ];
 
   int _currentPage = 1;
@@ -185,7 +186,10 @@ class _CataloguePageState extends State<CataloguePage> {
             );
           }
           final product = filteredProducts[index];
-          final foto = product.fotoProduk.isNotEmpty ? product.fotoProduk.first.pathFoto : null;
+          final foto =
+              product.fotoProduk.isNotEmpty
+                  ? product.fotoProduk.first.pathFoto
+                  : null;
           return _buildProductCard(product, foto);
         },
       ),
@@ -194,7 +198,14 @@ class _CataloguePageState extends State<CataloguePage> {
 
   Widget _buildProductCard(Produk product, String? foto) {
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DetailProdukPage(product: product),
+          ),
+        );
+      },
       child: Container(
         decoration: BoxDecoration(
           color: AppColors.surface,
@@ -213,44 +224,53 @@ class _CataloguePageState extends State<CataloguePage> {
             Stack(
               children: [
                 ClipRRect(
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
-                  child: foto != null
-                      ? Image.network(
-                          '${Api.storageUrl}foto_produk/$foto',
-                          height: 140,
-                          width: double.infinity,
-                          fit: BoxFit.cover,
-                          loadingBuilder: (context, child, loadingProgress) {
-                            if (loadingProgress == null) return child;
-                            return Image(
-                              image: const AssetImage('assets/icons/reuse-mart-icon.png'),
-                              height: 140,
-                              width: double.infinity,
-                              fit: BoxFit.cover,
-                            );
-                          },
-                          errorBuilder: (
-                            context,
-                            error,
-                            stackTrace,
-                          ) => Image(
-                              image: const AssetImage('assets/icons/reuse-mart-icon.png'),
-                              height: 140,
-                              width: double.infinity,
-                              fit: BoxFit.cover,
-                            ),
-                        )
-                      : Image.asset('assets/images/reuse-mart.png',
-                          height: 140,
-                          width: double.infinity,
-                          fit: BoxFit.cover),
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(10),
+                  ),
+                  child:
+                      foto != null
+                          ? Image.network(
+                            '${Api.storageUrl}foto_produk/$foto',
+                            height: 140,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return Image(
+                                image: const AssetImage(
+                                  'assets/icons/reuse-mart-icon.png',
+                                ),
+                                height: 140,
+                                width: double.infinity,
+                                fit: BoxFit.cover,
+                              );
+                            },
+                            errorBuilder:
+                                (context, error, stackTrace) => Image(
+                                  image: const AssetImage(
+                                    'assets/icons/reuse-mart-icon.png',
+                                  ),
+                                  height: 140,
+                                  width: double.infinity,
+                                  fit: BoxFit.cover,
+                                ),
+                          )
+                          : Image.asset(
+                            'assets/images/reuse-mart.png',
+                            height: 140,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                          ),
                 ),
                 if (product.waktuGaransi != null)
                   Positioned(
                     top: 10,
                     left: 10,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 3,
+                      ),
                       decoration: BoxDecoration(
                         color: AppColors.success,
                         borderRadius: BorderRadius.circular(10),
@@ -265,9 +285,19 @@ class _CataloguePageState extends State<CataloguePage> {
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.verified, color: Colors.white, size: 13),
+                          const Icon(
+                            Icons.verified,
+                            color: Colors.white,
+                            size: 13,
+                          ),
                           const SizedBox(width: 3),
-                          Text('Garansi', style: AppTextStyles.caption.copyWith(color: Colors.white, fontWeight: FontWeight.w600)),
+                          Text(
+                            'Garansi',
+                            style: AppTextStyles.caption.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -282,37 +312,28 @@ class _CataloguePageState extends State<CataloguePage> {
                   children: [
                     Text(
                       product.namaProduk,
-                      style: AppTextStyles.caption.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textPrimary,
-                        fontSize: 12,
-                      ),
+                      style: AppTextStyles.bodyBold,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       softWrap: true,
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Rp${product.hargaProduk.toString()}',
+                      formatHarga(product.hargaProduk),
                       style: AppTextStyles.body.copyWith(
                         color: AppColors.primary,
                         fontWeight: FontWeight.bold,
-                        fontSize: 14,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Row(
                       children: [
-                        Icon(
-                          Icons.category,
-                          size: 13,
-                          color: AppColors.accent,
-                        ),
+                        Icon(Icons.category, size: 13, color: AppColors.accent),
                         const SizedBox(width: 4),
                         Expanded(
                           child: Text(
                             product.kategori.namaKategori,
-                            style: AppTextStyles.caption.copyWith(fontSize: 11),
+                            style: AppTextStyles.caption,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -322,16 +343,12 @@ class _CataloguePageState extends State<CataloguePage> {
                     const SizedBox(height: 2),
                     Row(
                       children: [
-                        Icon(
-                          Icons.person,
-                          size: 13,
-                          color: AppColors.primary,
-                        ),
+                        Icon(Icons.person, size: 13, color: AppColors.primary),
                         const SizedBox(width: 4),
                         Expanded(
                           child: Text(
                             product.detailPenitipan.penitipan.penitip.user.nama,
-                            style: AppTextStyles.caption.copyWith(fontSize: 11),
+                            style: AppTextStyles.caption,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -362,7 +379,10 @@ class _CataloguePageState extends State<CataloguePage> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: Text('Katalog Produk', style: AppTextStyles.heading3.copyWith(color: AppColors.textInverse)),
+        title: Text(
+          'Katalog Produk',
+          style: AppTextStyles.heading3.copyWith(color: AppColors.textInverse),
+        ),
         backgroundColor: AppColors.primary,
         elevation: 0,
       ),
@@ -376,27 +396,35 @@ class _CataloguePageState extends State<CataloguePage> {
             _buildCategoryChips(),
             const SizedBox(height: 16),
             Expanded(
-              child: _allProducts.isEmpty && _isLoadingMore
-                  ? const Center(child: CircularProgressIndicator())
-                  : Builder(
-                      builder: (context) {
-                        final filteredProducts = _allProducts.where((product) {
-                          final matchesCategory = _selectedCategory == 'Semua' || product.kategori.namaKategori == _selectedCategory;
-                          final matchesSearch = _searchController.text.isEmpty ||
-                              product.namaProduk.toLowerCase().contains(_searchController.text.toLowerCase());
-                          return matchesCategory && matchesSearch;
-                        }).toList();
-                        if (filteredProducts.isEmpty && !_isLoadingMore) {
-                          return Center(
-                            child: Text(
-                              'Tidak ada produk ditemukan',
-                              style: AppTextStyles.subtitle,
-                            ),
-                          );
-                        }
-                        return _buildProductGrid(filteredProducts);
-                      },
-                    ),
+              child:
+                  _allProducts.isEmpty && _isLoadingMore
+                      ? const Center(child: CircularProgressIndicator())
+                      : Builder(
+                        builder: (context) {
+                          final filteredProducts =
+                              _allProducts.where((product) {
+                                final matchesCategory =
+                                    _selectedCategory == 'Semua' ||
+                                    product.kategori.namaKategori ==
+                                        _selectedCategory;
+                                final matchesSearch =
+                                    _searchController.text.isEmpty ||
+                                    product.namaProduk.toLowerCase().contains(
+                                      _searchController.text.toLowerCase(),
+                                    );
+                                return matchesCategory && matchesSearch;
+                              }).toList();
+                          if (filteredProducts.isEmpty && !_isLoadingMore) {
+                            return Center(
+                              child: Text(
+                                'Tidak ada produk ditemukan',
+                                style: AppTextStyles.subtitle,
+                              ),
+                            );
+                          }
+                          return _buildProductGrid(filteredProducts);
+                        },
+                      ),
             ),
           ],
         ),

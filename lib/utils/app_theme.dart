@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 // More flexible and various color definitions
 class AppColors {
@@ -19,6 +20,15 @@ class AppColors {
 }
 
 // More flexible and various text styles
+
+String formatHarga(value) {
+  return NumberFormat.currency(
+    locale: 'id_ID',
+    symbol: 'Rp',
+    decimalDigits: 0,
+  ).format(value);
+}
+
 class AppTextStyles {
   static const TextStyle heading1 = TextStyle(
     fontSize: 32,
@@ -45,19 +55,19 @@ class AppTextStyles {
     fontFamily: 'Montserrat',
   );
   static const TextStyle body = TextStyle(
-    fontSize: 16,
+    fontSize: 14,
     color: AppColors.textPrimary,
     fontFamily: 'Montserrat',
   );
   static const TextStyle bodyBold = TextStyle(
-    fontSize: 16,
+    fontSize: 12,
     fontWeight: FontWeight.bold,
     color: AppColors.textPrimary,
     fontFamily: 'Montserrat',
   );
   static const TextStyle caption = TextStyle(
-    fontSize: 12,
-    color: AppColors.textSecondary,
+    fontSize: 11,
+    color: AppColors.textPrimary,
     fontFamily: 'Montserrat',
   );
   static const TextStyle button = TextStyle(
@@ -128,9 +138,7 @@ final ThemeData appTheme = ThemeData(
       backgroundColor: AppColors.primary,
       foregroundColor: AppColors.textInverse,
       textStyle: AppTextStyles.button,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
     ),
   ),
   inputDecorationTheme: const InputDecorationTheme(
