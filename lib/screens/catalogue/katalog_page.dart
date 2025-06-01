@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:reuse_mart_mobile/models/produk.dart';
 import 'package:reuse_mart_mobile/screens/catalogue/detail_produk_page.dart';
@@ -35,26 +36,56 @@ class _KatalogPageState extends State<KatalogPage> {
   bool _hasMore = true;
   List<Produk> _allProducts = [];
   final ScrollController _scrollController = ScrollController();
+  Timer? _debounce;
 
   @override
   void initState() {
     super.initState();
+    _searchController.addListener(_onSearchChangedDebounced);
     _fetchInitialProducts();
     _scrollController.addListener(_onScroll);
   }
 
   @override
   void dispose() {
+    _searchController.removeListener(_onSearchChangedDebounced);
     _scrollController.dispose();
+    _searchController.dispose();
+    _debounce?.cancel();
     super.dispose();
+  }
+
+  void _onSearchChangedDebounced() {
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+    _debounce = Timer(const Duration(milliseconds: 400), () {
+      _fetchInitialProducts();
+    });
+  }
+
+  void _onCategorySelected(String category) {
+    if (_selectedCategory == category) return;
+    setState(() {
+      _selectedCategory = category;
+      _currentPage = 1;
+      _allProducts.clear();
+      _hasMore = true;
+    });
+    _fetchInitialProducts();
   }
 
   Future<void> _fetchInitialProducts() async {
     setState(() {
       _isLoadingMore = true;
+      _currentPage = 1;
     });
     try {
-      final products = await ProductService.fetchProducts(_currentPage, 6);
+      final kategoriParam = _selectedCategory != 'Semua' ? Uri.encodeComponent(_selectedCategory) : null;
+      final products = await ProductService.fetchProducts(
+        page: 1,
+        limit: 6,
+        kategori: kategoriParam,
+        search: _searchController.text.isNotEmpty ? _searchController.text : null,
+      );
       setState(() {
         _allProducts = products;
         _hasMore = products.length == 6;
@@ -74,7 +105,13 @@ class _KatalogPageState extends State<KatalogPage> {
     });
     try {
       final nextPage = _currentPage + 1;
-      final products = await ProductService.fetchProducts(nextPage, 6);
+      final kategoriParam = _selectedCategory != 'Semua' ? Uri.encodeComponent(_selectedCategory) : null;
+      final products = await ProductService.fetchProducts(
+        page: nextPage,
+        limit: 6,
+        kategori: kategoriParam,
+        search: _searchController.text.isNotEmpty ? _searchController.text : null,
+      );
       setState(() {
         _currentPage = nextPage;
         _allProducts.addAll(products);
@@ -95,24 +132,6 @@ class _KatalogPageState extends State<KatalogPage> {
         _hasMore) {
       _fetchMoreProducts();
     }
-  }
-
-  Widget _buildSearchBar() {
-    return Material(
-      elevation: 1,
-      borderRadius: BorderRadius.circular(10),
-      child: TextField(
-        controller: _searchController,
-        onChanged: (_) => setState(() {}),
-        decoration: const InputDecoration(
-          hintText: 'Cari produk titipan...',
-          prefixIcon: Icon(Icons.search),
-          border: InputBorder.none,
-          contentPadding: EdgeInsets.symmetric(vertical: 14),
-        ),
-        style: AppTextStyles.body,
-      ),
-    );
   }
 
   Widget _buildCategoryChips() {
@@ -144,11 +163,7 @@ class _KatalogPageState extends State<KatalogPage> {
             selected: isSelected,
             selectedColor: AppColors.primary,
             backgroundColor: Colors.white,
-            onSelected: (_) {
-              setState(() {
-                _selectedCategory = category;
-              });
-            },
+            onSelected: (_) => _onCategorySelected(category),
             elevation: 1,
             pressElevation: 2,
             visualDensity: VisualDensity.compact,
@@ -159,40 +174,42 @@ class _KatalogPageState extends State<KatalogPage> {
     );
   }
 
-  Widget _buildProductGrid(List<Produk> filteredProducts) {
-    return NotificationListener<ScrollNotification>(
-      onNotification: (scrollInfo) {
-        if (scrollInfo is ScrollEndNotification &&
-            _scrollController.position.pixels >=
-                _scrollController.position.maxScrollExtent - 200) {
-          _fetchMoreProducts();
-        }
-        return false;
-      },
-      child: GridView.builder(
-        controller: _scrollController,
-        itemCount: filteredProducts.length + (_isLoadingMore ? 1 : 0),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          mainAxisSpacing: 16,
-          crossAxisSpacing: 16,
-          childAspectRatio: 0.7,
+  Widget _buildSearchBar() {
+    return Material(
+      elevation: 1,
+      borderRadius: BorderRadius.circular(10),
+      child: TextField(
+        controller: _searchController,
+        onSubmitted: (_) => _fetchInitialProducts(),
+        decoration: const InputDecoration(
+          hintText: 'Cari produk titipan...',
+          prefixIcon: Icon(Icons.search),
+          border: InputBorder.none,
+          contentPadding: EdgeInsets.symmetric(vertical: 14),
         ),
-        itemBuilder: (context, index) {
-          if (index == filteredProducts.length) {
-            return const Padding(
-              padding: EdgeInsets.symmetric(vertical: 24),
-              child: Center(child: CircularProgressIndicator()),
-            );
-          }
-          final product = filteredProducts[index];
-          final foto =
-              product.fotoProduk.isNotEmpty
-                  ? product.fotoProduk.first.pathFoto
-                  : null;
-          return _buildProductCard(product, foto);
-        },
+        style: AppTextStyles.body,
       ),
+    );
+  }
+
+  Widget _buildProductGrid(List<Produk> filteredProducts) {
+    return GridView.builder(
+      controller: _scrollController,
+      itemCount: filteredProducts.length,
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        mainAxisSpacing: 16,
+        crossAxisSpacing: 16,
+        childAspectRatio: 0.7,
+      ),
+      itemBuilder: (context, index) {
+        final product = filteredProducts[index];
+        final foto =
+            product.fotoProduk.isNotEmpty
+                ? product.fotoProduk.first.pathFoto
+                : null;
+        return _buildProductCard(product, foto);
+      },
     );
   }
 
@@ -387,7 +404,7 @@ class _KatalogPageState extends State<KatalogPage> {
         elevation: 0,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.only(left: 16, right: 16, top: 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -396,35 +413,50 @@ class _KatalogPageState extends State<KatalogPage> {
             _buildCategoryChips(),
             const SizedBox(height: 16),
             Expanded(
-              child:
-                  _allProducts.isEmpty && _isLoadingMore
-                      ? const Center(child: CircularProgressIndicator())
-                      : Builder(
-                        builder: (context) {
-                          final filteredProducts =
-                              _allProducts.where((product) {
-                                final matchesCategory =
-                                    _selectedCategory == 'Semua' ||
-                                    product.kategori.namaKategori ==
-                                        _selectedCategory;
-                                final matchesSearch =
-                                    _searchController.text.isEmpty ||
-                                    product.namaProduk.toLowerCase().contains(
-                                      _searchController.text.toLowerCase(),
-                                    );
-                                return matchesCategory && matchesSearch;
-                              }).toList();
-                          if (filteredProducts.isEmpty && !_isLoadingMore) {
-                            return Center(
-                              child: Text(
-                                'Tidak ada produk ditemukan',
-                                style: AppTextStyles.subtitle,
-                              ),
-                            );
-                          }
-                          return _buildProductGrid(filteredProducts);
-                        },
+              child: Builder(
+                builder: (context) {
+                  final filteredProducts = _allProducts.where((product) {
+                    final matchesCategory =
+                        _selectedCategory == 'Semua' ||
+                        product.kategori.namaKategori == _selectedCategory;
+                    final matchesSearch =
+                        _searchController.text.isEmpty ||
+                        product.namaProduk.toLowerCase().contains(
+                          _searchController.text.toLowerCase(),
+                        );
+                    return matchesCategory && matchesSearch;
+                  }).toList();
+                  if (_isLoadingMore && _allProducts.isEmpty) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (!_isLoadingMore && filteredProducts.isEmpty) {
+                    return Center(
+                      child: Text(
+                        'Tidak ada produk ditemukan',
+                        style: AppTextStyles.subtitle,
                       ),
+                    );
+                  }
+                  return Stack(
+                    children: [
+                      _buildProductGrid(filteredProducts),
+                      if (_isLoadingMore && _allProducts.isNotEmpty)
+                        Positioned(
+                          left: 0,
+                          right: 0,
+                          bottom: 0,
+                          child: Padding(
+                            padding: const EdgeInsets.only(bottom: 8),
+                            child: Container(
+                              width: double.infinity,
+                              child: LinearProgressIndicator(),
+                            ),
+                          ),
+                        ),
+                    ],
+                  );
+                },
+              ),
             ),
           ],
         ),

@@ -29,6 +29,15 @@ String formatHarga(value) {
   ).format(value);
 }
 
+String formatTanggal(dynamic value) {
+  try {
+    final date = value is DateTime ? value : DateTime.parse(value.toString());
+    return DateFormat('dd MMM yyyy').format(date);
+  } catch (e) {
+    return '-';
+  }
+}
+
 class AppTextStyles {
   static const TextStyle heading1 = TextStyle(
     fontSize: 32,
