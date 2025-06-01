@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:reuse_mart_mobile/models/penitip.dart';
 import 'package:reuse_mart_mobile/models/produk.dart';
 import 'package:reuse_mart_mobile/services/product_service.dart';
 import 'package:reuse_mart_mobile/utils/api.dart';
 import 'package:reuse_mart_mobile/utils/app_theme.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class DetailProdukPage extends StatefulWidget {
   final Produk product;
@@ -21,10 +23,14 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
   List<Produk> _produkLain = [];
   bool _isLoadingProdukLain = false;
 
+  Penitip? penitip;
+  bool _isLoadingPenitip = true;
+
   @override
   void initState() {
     super.initState();
     _pageController = PageController(initialPage: _currentImage);
+    _fetchPenitip();
     _fetchProdukLainPenitip();
   }
 
@@ -33,15 +39,35 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
       _isLoadingProdukLain = true;
     });
     try {
-      final penitipId = widget.product.detailPenitipan.penitipan.penitip.idPenitip;
+      final penitipId =
+          widget.product.detailPenitipan.penitipan.penitip.idPenitip;
       final produkList = await ProductService.fetchProductsPenitip(penitipId);
       // Exclude current product
-      _produkLain = produkList.where((p) => p.idProduk != widget.product.idProduk).toList();
+      _produkLain =
+          produkList
+              .where((p) => p.idProduk != widget.product.idProduk)
+              .toList();
     } catch (e) {
       _produkLain = [];
     }
     setState(() {
       _isLoadingProdukLain = false;
+    });
+  }
+
+  Future<void> _fetchPenitip() async {
+    setState(() {
+      _isLoadingPenitip = true;
+    });
+    try {
+      penitip = await ProductService.fetchPenitipById(
+        widget.product.detailPenitipan.penitipan.penitip.idPenitip,
+      );
+    } catch (e) {
+      penitip = null;
+    }
+    setState(() {
+      _isLoadingPenitip = false;
     });
   }
 
@@ -312,7 +338,10 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
-                        color: Color.alphaBlend(AppColors.success.withAlpha(46), Colors.transparent), // 0.18*255 ≈ 46
+                        color: Color.alphaBlend(
+                          AppColors.success.withAlpha(46),
+                          Colors.transparent,
+                        ), // 0.18*255 ≈ 46
                         blurRadius: 8,
                         offset: const Offset(0, 2),
                       ),
@@ -350,7 +379,10 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
-                        color: Color.alphaBlend(AppColors.textSecondary.withAlpha(46), Colors.transparent), // 0.18*255 ≈ 46
+                        color: Color.alphaBlend(
+                          AppColors.textSecondary.withAlpha(46),
+                          Colors.transparent,
+                        ), // 0.18*255 ≈ 46
                         blurRadius: 8,
                         offset: const Offset(0, 2),
                       ),
@@ -426,8 +458,7 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
     );
   }
 
-  Widget _buildPenitipInfo() {
-    final penitip = widget.product.detailPenitipan.penitipan.penitip;
+  Widget _buildPenitipInfo(Penitip penitip) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -457,15 +488,59 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
-            // subtitle: Text(
-            //   penitip.,
-            //   style: AppTextStyles.caption,
-            //   maxLines: 1,
-            //   overflow: TextOverflow.ellipsis,
-            // ),
+            subtitle: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      'Rating:',
+                      style: AppTextStyles.body,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    Icon(Icons.star, color: Colors.amber, size: 18),
+                    const SizedBox(width: 2),
+                    Text(
+                      penitip.rating != null ? '${penitip.rating}/5' : '-',
+                      style: AppTextStyles.body,
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildPenitipSkeleton() {
+    return Skeletonizer(
+      enabled: true,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Penitip', style: AppTextStyles.heading3.copyWith(fontWeight: FontWeight.bold)),
+          const SizedBox(height: 8),
+          Card(
+            color: AppColors.surface,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            elevation: 2,
+            child: ListTile(
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              leading: CircleAvatar(
+                backgroundColor: AppColors.primary,
+                child: Icon(Icons.person, color: AppColors.textInverse),
+              ),
+              title: Container(width: 80, height: 16, color: Colors.white),
+              subtitle: Container(width: 60, height: 14, color: Colors.white),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -496,7 +571,10 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
             separatorBuilder: (_, __) => const SizedBox(width: 12),
             itemBuilder: (context, index) {
               final product = _produkLain[index];
-              final foto = product.fotoProduk.isNotEmpty ? product.fotoProduk.first.pathFoto : null;
+              final foto =
+                  product.fotoProduk.isNotEmpty
+                      ? product.fotoProduk.first.pathFoto
+                      : null;
               return SizedBox(
                 width: 180,
                 child: GestureDetector(
@@ -504,7 +582,8 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => DetailProdukPage(product: product),
+                        builder:
+                            (context) => DetailProdukPage(product: product),
                       ),
                     );
                   },
@@ -524,26 +603,31 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         ClipRRect(
-                          borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
-                          child: foto != null
-                              ? Image.network(
-                                  '${Api.storageUrl}foto_produk/$foto',
-                                  height: 110,
-                                  width: double.infinity,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) => Image.asset(
+                          borderRadius: const BorderRadius.vertical(
+                            top: Radius.circular(10),
+                          ),
+                          child:
+                              foto != null
+                                  ? Image.network(
+                                    '${Api.storageUrl}foto_produk/$foto',
+                                    height: 110,
+                                    width: double.infinity,
+                                    fit: BoxFit.cover,
+                                    errorBuilder:
+                                        (context, error, stackTrace) =>
+                                            Image.asset(
+                                              'assets/images/reuse-mart.png',
+                                              height: 110,
+                                              width: double.infinity,
+                                              fit: BoxFit.cover,
+                                            ),
+                                  )
+                                  : Image.asset(
                                     'assets/images/reuse-mart.png',
                                     height: 110,
                                     width: double.infinity,
                                     fit: BoxFit.cover,
                                   ),
-                                )
-                              : Image.asset(
-                                  'assets/images/reuse-mart.png',
-                                  height: 110,
-                                  width: double.infinity,
-                                  fit: BoxFit.cover,
-                                ),
                         ),
                         Padding(
                           padding: const EdgeInsets.all(10),
@@ -567,7 +651,11 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                               const SizedBox(height: 4),
                               Row(
                                 children: [
-                                  Icon(Icons.category, size: 13, color: AppColors.accent),
+                                  Icon(
+                                    Icons.category,
+                                    size: 13,
+                                    color: AppColors.accent,
+                                  ),
                                   const SizedBox(width: 4),
                                   Expanded(
                                     child: Text(
@@ -582,11 +670,20 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                               const SizedBox(height: 4),
                               Row(
                                 children: [
-                                  Icon(Icons.person, size: 13, color: AppColors.primary),
+                                  Icon(
+                                    Icons.person,
+                                    size: 13,
+                                    color: AppColors.primary,
+                                  ),
                                   const SizedBox(width: 4),
                                   Expanded(
                                     child: Text(
-                                      product.detailPenitipan.penitipan.penitip.user.nama,
+                                      product
+                                          .detailPenitipan
+                                          .penitipan
+                                          .penitip
+                                          .user
+                                          .nama,
                                       style: AppTextStyles.caption,
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
@@ -606,6 +703,65 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildProdukLainPenitipSkeleton() {
+    return Skeletonizer(
+      enabled: true,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 24),
+          Text('Produk lain dari Penitip', style: AppTextStyles.heading3.copyWith(fontWeight: FontWeight.bold)),
+          const SizedBox(height: 12),
+          SizedBox(
+            height: 240,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: 3,
+              separatorBuilder: (_, __) => const SizedBox(width: 12),
+              itemBuilder: (context, index) {
+                return SizedBox(
+                  width: 180,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: AppColors.surface,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          height: 110,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(width: 100, height: 16, color: Colors.white),
+                              const SizedBox(height: 4),
+                              Container(width: 60, height: 14, color: Colors.white),
+                              const SizedBox(height: 4),
+                              Container(width: 80, height: 12, color: Colors.white),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -639,8 +795,22 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
               const SizedBox(height: 16),
               _buildDescription(),
               const SizedBox(height: 16),
-              _buildPenitipInfo(),
-              _buildProdukLainPenitipSection(),
+              if (_isLoadingPenitip)
+                _buildPenitipSkeleton()
+              else if (penitip != null)
+                _buildPenitipInfo(penitip!)
+              else
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 16),
+                  child: Text(
+                    'Gagal memuat data penitip',
+                    style: TextStyle(color: Colors.red),
+                  ),
+                ),
+              if (!_isLoadingPenitip && _isLoadingProdukLain)
+                _buildProdukLainPenitipSkeleton()
+              else if (!_isLoadingPenitip)
+                _buildProdukLainPenitipSection(),
             ],
           ),
         ),

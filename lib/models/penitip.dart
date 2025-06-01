@@ -8,6 +8,7 @@ class Penitip {
   final int saldo;
   final int poin;
   final User user;
+  final int? rating;
 
   Penitip({
     required this.idPenitip,
@@ -17,6 +18,7 @@ class Penitip {
     required this.saldo,
     required this.poin,
     required this.user,
+    required this.rating,
   });
 
   factory Penitip.fromJson(Map<String, dynamic> json) {
@@ -27,6 +29,7 @@ class Penitip {
       fotoKtp: json['foto_ktp'],
       saldo: json['saldo'],
       poin: json['poin'],
+      rating: json['rating'],
       user: User.fromJson(json['user']),
     );
   }
