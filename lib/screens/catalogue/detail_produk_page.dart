@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:reuse_mart_mobile/models/penitip.dart';
 import 'package:reuse_mart_mobile/models/produk.dart';
+import 'package:reuse_mart_mobile/services/penitip_service.dart';
 import 'package:reuse_mart_mobile/services/product_service.dart';
 import 'package:reuse_mart_mobile/utils/api.dart';
 import 'package:reuse_mart_mobile/utils/app_theme.dart';
@@ -60,7 +61,7 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
       _isLoadingPenitip = true;
     });
     try {
-      penitip = await ProductService.fetchPenitipById(
+      penitip = await PenitipService.fetchPenitipById(
         widget.product.detailPenitipan.penitipan.penitip.idPenitip,
       );
     } catch (e) {
