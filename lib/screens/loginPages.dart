@@ -46,7 +46,7 @@ class _LoginPageState extends State<LoginPage> {
       http.Response response = await AuthService.login(
         emailController.text,
         passwordController.text,
-        prefs.getString('fcmToken')!,
+        prefs.getString('fcmToken') ?? '',
       );
       Map responseMap = jsonDecode(response.body);
       if (response.statusCode == 200) {
@@ -58,17 +58,7 @@ class _LoginPageState extends State<LoginPage> {
         // Pindah ke halaman sesuai role: Pembeli, Penitip, Kurir, Hunter
         String role = data['user']['role'];
         if (mounted) {
-          if (role == 'Penitip') {
-            Navigator.pushReplacementNamed(context, '/penitipHome');
-          } else if (role == 'Pembeli') {
-            Navigator.pushReplacementNamed(context, '/pembeliHome');
-          } else if (role == 'Kurir') {
-            Navigator.pushReplacementNamed(context, '/kurirHome');
-          } else if (role == 'Hunter') {
-            Navigator.pushReplacementNamed(context, '/hunterHome');
-          } else {
-            Navigator.pushReplacementNamed(context, '/login');
-          }
+          Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
         }
       } else {
         if (mounted) {

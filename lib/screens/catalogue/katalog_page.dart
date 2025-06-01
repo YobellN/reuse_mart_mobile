@@ -5,6 +5,7 @@ import 'package:reuse_mart_mobile/screens/catalogue/detail_produk_page.dart';
 import 'package:reuse_mart_mobile/services/product_service.dart';
 import 'package:reuse_mart_mobile/utils/api.dart';
 import 'package:reuse_mart_mobile/utils/app_theme.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class KatalogPage extends StatefulWidget {
   const KatalogPage({super.key});
@@ -382,6 +383,60 @@ class _KatalogPageState extends State<KatalogPage> {
     );
   }
 
+  Widget _buildProductGridSkeleton() {
+    return Skeletonizer(
+      enabled: true,
+      child: GridView.builder(
+        physics: const NeverScrollableScrollPhysics(),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          mainAxisSpacing: 16,
+          crossAxisSpacing: 16,
+          childAspectRatio: 0.7,
+        ),
+        itemCount: 6,
+        itemBuilder: (context, index) {
+          return Container(
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  height: 140,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
+                  ),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(width: 80, height: 16, color: Colors.white),
+                        const SizedBox(height: 4),
+                        Container(width: 60, height: 14, color: Colors.white),
+                        const SizedBox(height: 4),
+                        Container(width: 80, height: 12, color: Colors.white),
+                        const SizedBox(height: 2),
+                        Container(width: 80, height: 12, color: Colors.white),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
   // Future<void> _refreshProducts() async {
   //   setState(() {
   //     _currentPage = 1;
@@ -427,7 +482,23 @@ class _KatalogPageState extends State<KatalogPage> {
                     return matchesCategory && matchesSearch;
                   }).toList();
                   if (_isLoadingMore && _allProducts.isEmpty) {
-                    return const Center(child: CircularProgressIndicator());
+                    return Stack(
+                      children: [
+                        _buildProductGridSkeleton(),
+                        Positioned(
+                          left: 0,
+                          right: 0,
+                          bottom: 0,
+                          child: Padding(
+                            padding: const EdgeInsets.only(bottom: 8),
+                            child: SizedBox(
+                              width: double.infinity,
+                              child: LinearProgressIndicator(),
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
                   }
                   if (!_isLoadingMore && filteredProducts.isEmpty) {
                     return Center(
@@ -447,7 +518,7 @@ class _KatalogPageState extends State<KatalogPage> {
                           bottom: 0,
                           child: Padding(
                             padding: const EdgeInsets.only(bottom: 8),
-                            child: Container(
+                            child: SizedBox(
                               width: double.infinity,
                               child: LinearProgressIndicator(),
                             ),
