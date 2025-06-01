@@ -2,16 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:reuse_mart_mobile/view/notification-screen.dart';
+import 'package:reuse_mart_mobile/screens/home/homePage.dart';
+import 'package:reuse_mart_mobile/screens/notification-screen.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
 // PAGES
-import 'package:reuse_mart_mobile/pages/hunterHomePages.dart';
-import 'package:reuse_mart_mobile/pages/kurirHomePages.dart';
-import 'package:reuse_mart_mobile/pages/loginPages.dart';
-import 'package:reuse_mart_mobile/pages/pembeliHomePages.dart';
-import 'package:reuse_mart_mobile/pages/penitipHomePages.dart';
+import 'package:reuse_mart_mobile/screens/hunterHomePages.dart';
+import 'package:reuse_mart_mobile/screens/kurirHomePages.dart';
+import 'package:reuse_mart_mobile/screens/loginPages.dart';
+import 'package:reuse_mart_mobile/screens/penitipHomePages.dart';
+import 'package:reuse_mart_mobile/utils/app_theme.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -50,7 +51,7 @@ void main() async {
         initialRoute = '/login';
     }
   } else {
-    initialRoute = '/login';
+    initialRoute = '/home';
   }
 
   runApp(MyApp(initialRoute: initialRoute));
@@ -169,16 +170,13 @@ class MyApp extends StatelessWidget {
         // Pembeli, Penitip, Kurir, Hunter
         '/login': (_) => LoginPage(),
         '/penitipHome': (_) => PenitipHomePage(),
-        '/pembeliHome': (_) => PembeliHomePage(),
+        '/home': (_) => HomePage(),
         '/kurirHome': (_) => KurirHomePage(),
         '/hunterHome': (_) => HunterHomePage(),
       },
       navigatorKey: navigatorKey,
       title: 'ReuseMart',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
-        useMaterial3: true,
-      ),
+      theme: appTheme,
     );
   }
 }
