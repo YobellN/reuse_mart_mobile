@@ -103,12 +103,10 @@ final ThemeData appTheme = ThemeData(
     secondary: AppColors.accent,
     secondaryContainer: AppColors.secondary,
     surface: AppColors.surface,
-    background: AppColors.background,
     error: AppColors.error,
     onPrimary: AppColors.textInverse,
     onSecondary: AppColors.textInverse,
     onSurface: AppColors.textPrimary,
-    onBackground: AppColors.textPrimary,
     onError: AppColors.textInverse,
     brightness: Brightness.light,
   ),
@@ -128,11 +126,11 @@ final ThemeData appTheme = ThemeData(
     labelSmall: AppTextStyles.caption,
   ),
   fontFamily: 'Montserrat',
-  appBarTheme: const AppBarTheme(
+  appBarTheme: AppBarTheme(
     backgroundColor: AppColors.primary,
     foregroundColor: AppColors.textInverse,
     elevation: 0,
-    titleTextStyle: AppTextStyles.heading2,
+    titleTextStyle: AppTextStyles.heading2.copyWith(color: AppColors.textInverse),
     iconTheme: IconThemeData(color: AppColors.textInverse),
   ),
   buttonTheme: const ButtonThemeData(

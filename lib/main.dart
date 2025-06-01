@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:reuse_mart_mobile/screens/home/homePage.dart';
+import 'package:reuse_mart_mobile/screens/home/home_page.dart';
 import 'package:reuse_mart_mobile/screens/notification-screen.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
@@ -28,33 +28,8 @@ void main() async {
 
   // Ambil shared preferences
   final prefs = await SharedPreferences.getInstance();
-  final tokenUser = prefs.getString('token');
-  final role = prefs.getString('role');
 
-  // Tentukan initial route
-  String initialRoute;
-  if (tokenUser != null) {
-    switch (role) {
-      case 'Penitip':
-        initialRoute = '/penitipHome';
-        break;
-      case 'Pembeli':
-        initialRoute = '/pembeliHome';
-        break;
-      case 'Kurir':
-        initialRoute = '/kurirHome';
-        break;
-      case 'Hunter':
-        initialRoute = '/hunterHome';
-        break;
-      default:
-        initialRoute = '/login';
-    }
-  } else {
-    initialRoute = '/home';
-  }
-
-  runApp(MyApp(initialRoute: initialRoute));
+  runApp(MyApp());
 
   _checkInitialMessage();
 
@@ -158,22 +133,22 @@ void _checkInitialMessage() async {
   }
 }
 
+final routes = <String, WidgetBuilder>{
+  '/login': (_) => LoginPage(),
+  '/penitipHome': (_) => PenitipHomePage(),
+  '/home': (_) => HomePage(),
+  '/kurirHome': (_) => KurirHomePage(),
+  '/hunterHome': (_) => HunterHomePage(),
+};
+
 class MyApp extends StatelessWidget {
-  final String initialRoute;
-  const MyApp({super.key, required this.initialRoute});
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      initialRoute: initialRoute,
-      routes: {
-        // Pembeli, Penitip, Kurir, Hunter
-        '/login': (_) => LoginPage(),
-        '/penitipHome': (_) => PenitipHomePage(),
-        '/home': (_) => HomePage(),
-        '/kurirHome': (_) => KurirHomePage(),
-        '/hunterHome': (_) => HunterHomePage(),
-      },
+      initialRoute: '/home',
+      routes: routes,
       navigatorKey: navigatorKey,
       title: 'ReuseMart',
       theme: appTheme,

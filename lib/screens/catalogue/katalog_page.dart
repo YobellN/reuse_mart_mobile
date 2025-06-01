@@ -491,7 +491,7 @@ class _KatalogPageState extends State<KatalogPage> {
                           bottom: 0,
                           child: Padding(
                             padding: const EdgeInsets.only(bottom: 8),
-                            child: Container(
+                            child: SizedBox(
                               width: double.infinity,
                               child: LinearProgressIndicator(),
                             ),
@@ -518,7 +518,7 @@ class _KatalogPageState extends State<KatalogPage> {
                           bottom: 0,
                           child: Padding(
                             padding: const EdgeInsets.only(bottom: 8),
-                            child: Container(
+                            child: SizedBox(
                               width: double.infinity,
                               child: LinearProgressIndicator(),
                             ),
