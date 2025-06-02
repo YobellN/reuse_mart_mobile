@@ -4,6 +4,7 @@ import 'package:reuse_mart_mobile/screens/informasi_umum/informasiPage.dart';
 import 'package:reuse_mart_mobile/screens/profile/profilePage.dart';
 import 'package:reuse_mart_mobile/utils/app_theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -40,25 +41,25 @@ class _HomePageState extends State<HomePage> {
 
   List<Map<String, dynamic>> get navItems => [
     {
-      'icon': Icons.home,
+      'icon': 'assets/icons/home.svg',
       'label': 'Home',
       'widget': InformasiPage(role: _role),
       'showFor': ['Pembeli', 'Penitip', 'Hunter', 'Kurir', ''],
     },
     {
-      'icon': Icons.list_alt,
+      'icon': 'assets/icons/catalog.svg',
       'label': 'Katalog',
       'widget': KatalogPage(),
       'showFor': ['Pembeli', 'Penitip', 'Hunter', 'Kurir', ''],
     },
     {
-      'icon': Icons.history,
+      'icon': 'assets/icons/history.svg',
       'label': 'Riwayat',
       'widget': Center(child: Text('Riwayat', style: AppTextStyles.heading2)),
       'showFor': ['Pembeli', 'Penitip', 'Hunter', 'Kurir'],
     },
     {
-      'icon': Icons.person,
+      'icon': 'assets/icons/user.svg',
       'label': 'Profil',
       'widget': ProfilePage(
         email: "ZtJLH@example.com",
@@ -69,26 +70,55 @@ class _HomePageState extends State<HomePage> {
       'showFor': ['Pembeli', 'Penitip', 'Hunter', 'Kurir'],
     },
     {
-      'icon': Icons.login,
+      'icon': 'assets/icons/login.svg',
       'label': 'Login',
       'widget': Container(),
       'showFor': [''],
     },
   ];
 
-  List<BottomNavigationBarItem> get items =>
-      navItems
-          .where((item) => item['showFor'].contains(_role))
-          .map(
-            (item) => BottomNavigationBarItem(
-              icon: Icon(item['icon'] as IconData),
-              label: item['label'] as String,
-            ),
-          )
-          .toList();
+  List<BottomNavigationBarItem> get items {
+    final filteredItems =
+        navItems.where((item) => item['showFor'].contains(_role)).toList();
+    return List.generate(filteredItems.length, (index) {
+      final item = filteredItems[index];
+      final iconData = item['icon'];
+      final bool isSelected = _selectedIndex == index;
+
+      return BottomNavigationBarItem(
+        icon: Padding(
+          padding: const EdgeInsets.only(top: 8.0),
+          child:
+              iconData is String
+                  ? SvgPicture.asset(
+                    iconData,
+                    colorFilter: ColorFilter.mode(
+                      isSelected ? AppColors.primary : AppColors.textSecondary,
+                      BlendMode.srcIn,
+                    ),
+                    width: 26,
+                    height: 26,
+                  )
+                  : Icon(
+                    iconData as IconData,
+                    color:
+                        isSelected
+                            ? AppColors.primary
+                            : AppColors.textSecondary,
+                    size: 26,
+                  ),
+        ),
+        label: item['label'] as String,
+      );
+    });
+  }
 
   List<Widget> get pages =>
-      navItems.map((item) => item['widget'] as Widget).toList();
+      navItems
+          .where((item) => item['showFor'].contains(_role))
+          .map((item) => item['widget'] as Widget)
+          .toList();
+
 
   void _onItemTapped(int index) async {
     if (items[index].label == 'Login' && _token == '') {

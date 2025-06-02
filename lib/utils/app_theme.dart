@@ -3,8 +3,8 @@ import 'package:intl/intl.dart';
 
 // More flexible and various color definitions
 class AppColors {
-  static const Color primary = Color(0xFF4CAF50);
-  static const Color secondary = Color(0xFF388E3C);
+  static const Color primary = Color(0xFF2CCB67);
+  static const Color secondary = Color(0xFF1EBC46);
   static const Color background = Color(0xFFF5F5F5);
   static const Color surface = Color(0xFFFFFFFF);
   static const Color error = Color(0xFFD32F2F);
@@ -39,57 +39,63 @@ String formatTanggal(dynamic value) {
 }
 
 class AppTextStyles {
+  static const TextStyle textItalic = TextStyle(
+    fontSize: 16,
+    fontFamily: 'Plus Jakarta Sans',
+    fontStyle: FontStyle.italic,
+    color: AppColors.textPrimary,
+  );
   static const TextStyle heading1 = TextStyle(
     fontSize: 32,
     fontWeight: FontWeight.bold,
     color: AppColors.textPrimary,
-    fontFamily: 'Roboto',
+    fontFamily: 'Plus Jakarta Sans',
   );
   static const TextStyle heading2 = TextStyle(
     fontSize: 24,
     fontWeight: FontWeight.w600,
     color: AppColors.textPrimary,
-    fontFamily: 'Roboto',
+    fontFamily: 'Plus Jakarta Sans',
   );
   static const TextStyle heading3 = TextStyle(
     fontSize: 20,
     fontWeight: FontWeight.w500,
     color: AppColors.textPrimary,
-    fontFamily: 'Montserrat',
+    fontFamily: 'Plus Jakarta Sans',
   );
   static const TextStyle subtitle = TextStyle(
     fontSize: 18,
     fontWeight: FontWeight.w400,
     color: AppColors.textSecondary,
-    fontFamily: 'Montserrat',
+    fontFamily: 'Plus Jakarta Sans',
   );
   static const TextStyle body = TextStyle(
     fontSize: 14,
     color: AppColors.textPrimary,
-    fontFamily: 'Montserrat',
+    fontFamily: 'Plus Jakarta Sans',
   );
   static const TextStyle bodyBold = TextStyle(
     fontSize: 12,
     fontWeight: FontWeight.bold,
     color: AppColors.textPrimary,
-    fontFamily: 'Montserrat',
+    fontFamily: 'Plus Jakarta Sans',
   );
   static const TextStyle caption = TextStyle(
     fontSize: 11,
     color: AppColors.textPrimary,
-    fontFamily: 'Montserrat',
+    fontFamily: 'Plus Jakarta Sans',
   );
   static const TextStyle button = TextStyle(
     fontSize: 16,
     fontWeight: FontWeight.w600,
     color: AppColors.textInverse,
-    fontFamily: 'Montserrat',
+    fontFamily: 'Plus Jakarta Sans',
     letterSpacing: 1.2,
   );
   static const TextStyle error = TextStyle(
     fontSize: 14,
     color: AppColors.error,
-    fontFamily: 'Montserrat',
+    fontFamily: 'Plus Jakarta Sans',
   );
 }
 
