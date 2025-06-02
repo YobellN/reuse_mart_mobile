@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:reuse_mart_mobile/screens/catalogue/katalog_page.dart';
 import 'package:reuse_mart_mobile/screens/informasi_umum/informasiPage.dart';
+import 'package:reuse_mart_mobile/screens/onboarding_screen/onboarding_screen.dart';
 import 'package:reuse_mart_mobile/screens/profile/profilePage.dart';
 import 'package:reuse_mart_mobile/utils/app_theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -73,6 +74,12 @@ class _HomePageState extends State<HomePage> {
       'icon': 'assets/icons/login.svg',
       'label': 'Login',
       'widget': Container(),
+      'showFor': [''],
+    },
+    {
+      'icon': 'assets/icons/login.svg',
+      'label': 'Ke Onboarding',
+      'widget': OnBoardingScreen(),
       'showFor': [''],
     },
   ];
