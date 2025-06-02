@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:reuse_mart_mobile/components/loginPageComponent/button-login.dart';
 import 'package:reuse_mart_mobile/components/loginPageComponent/input-login.dart';
 import 'package:reuse_mart_mobile/services/auth_service.dart';
+import 'package:reuse_mart_mobile/utils/app_theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
@@ -71,42 +72,104 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[200],
+      backgroundColor: AppColors.background,
       body: SafeArea(
-        child: Center(
-          child: Column(
-            children: [
-              SizedBox(height: 50),
-              // logo reusemart nanti
-              Icon(Icons.lock, size: 100),
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const SizedBox(height: 40),
+                
+                // Logo container with shadow
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: AppColors.surface,
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.primary.withOpacity(0.2),
+                        spreadRadius: 2,
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Image.asset(
+                    'assets/icons/reuse-mart-icon.png',
+                    width: 100,
+                    height: 100,
+                    fit: BoxFit.contain,
+                  ),
+                ),
 
-              SizedBox(height: 50),
-              // Selaamt Datang!
-              Text(
-                'Selamat Datang!',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
-              ),
+                const SizedBox(height: 40),
+                
+                // Welcome text with styling
+                Text(
+                  'Selamat Datang!',
+                  style: AppTextStyles.heading1.copyWith(
+                    color: AppColors.textPrimary,
+                  ),
+                ),
 
-              SizedBox(height: 25),
-              // Email field
-              InputLoginForm(
-                controller: emailController,
-                hintText: 'youremail@mail.com',
-                obsecureText: false,
-              ),
+                const SizedBox(height: 8),
+                
+                Text(
+                  'Silakan masuk ke akun Anda',
+                  style: AppTextStyles.subtitle,
+                ),
 
-              SizedBox(height: 25),
-              // Password field
-              InputLoginForm(
-                controller: passwordController,
-                hintText: 'Password',
-                obsecureText: true,
-              ),
-
-              SizedBox(height: 25),
-              // Login button
-              ButtonLogin(onTap: loginUserPressed),
-            ],
+                const SizedBox(height: 40),
+                
+                // Login form container
+                Container(
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    color: AppColors.surface,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        spreadRadius: 1,
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center, // Change this from stretch to center
+                    children: [
+                      Center( // Add Center widget
+                        child: Text(
+                          'Login',
+                          style: AppTextStyles.heading3.copyWith(
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      InputLoginForm(
+                        controller: emailController,
+                        hintText: 'Email',
+                        obsecureText: false,
+                      ),
+                      const SizedBox(height: 16),
+                      InputLoginForm(
+                        controller: passwordController,
+                        hintText: 'Password',
+                        obsecureText: true,
+                      ),
+                      const SizedBox(height: 24),
+                      ButtonLogin(onTap: loginUserPressed),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
