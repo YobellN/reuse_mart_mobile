@@ -8,7 +8,9 @@ import 'package:reuse_mart_mobile/utils/app_theme.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class KatalogPage extends StatefulWidget {
-  const KatalogPage({super.key});
+  final String?
+  initialCategory; //ini ku tambahin ya bel, biar bisa konek ke home page (dina)
+  const KatalogPage({super.key, this.initialCategory});
 
   @override
   State<KatalogPage> createState() => _KatalogPageState();
@@ -40,8 +42,11 @@ class _KatalogPageState extends State<KatalogPage> {
   Timer? _debounce;
 
   @override
-  void initState() {
+void initState() {
     super.initState();
+    _selectedCategory =
+        widget.initialCategory ??
+        'Semua'; //ini juga ku tambahin ya bel, biar bisa konek ke home page (dina)
     _searchController.addListener(_onSearchChangedDebounced);
     _fetchInitialProducts();
     _scrollController.addListener(_onScroll);

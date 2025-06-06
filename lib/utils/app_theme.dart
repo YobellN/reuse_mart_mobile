@@ -22,15 +22,16 @@ class AppColors {
 
 
   //color palet onboarding
-  // hijo muda agak kuning dikit
   static const Color lightLime = Color(0xFFE8FCD1);
-
-  //ijo muda pastel
   static const Color mintGreen = Color(0xFFA5F4D0);
-
   static const Color darkGreen = Color(0xFF124430); //hijo gelap untuk teks
   static const Color emeraldGreen = Color(0xFF008236);
   static const Color brightGreen = Color(0xFF27C863);
+
+  //typograph 
+  static const Color softPastelGreen = Color(0xFF10B981);
+  static const Color darkPastelGreen = Color(0xFF065F46);
+
 
 
 

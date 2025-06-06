@@ -7,6 +7,9 @@ import 'package:reuse_mart_mobile/screens/notification-screen.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
+//TANGGAL
+import 'package:intl/date_symbol_data_local.dart';
+
 // PAGES
 import 'package:reuse_mart_mobile/screens/hunterHomePages.dart';
 import 'package:reuse_mart_mobile/screens/kurirHomePages.dart';
@@ -21,6 +24,7 @@ final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await initializeDateFormatting('id_ID', null);
   await Firebase.initializeApp();
   await _initializeLocalNotifications();
   await _requestPermission();

@@ -8,7 +8,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final int initialIndex;
+  final String? initialCategory;
+
+  const HomePage({super.key, this.initialIndex = 0, this.initialCategory});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -20,9 +23,9 @@ class _HomePageState extends State<HomePage> {
   String _role = '';
 
   @override
-  void initState() {
+void initState() {
     super.initState();
-    _selectedIndex = 0;
+    _selectedIndex = widget.initialIndex;
     getUser();
   }
 
@@ -50,7 +53,8 @@ class _HomePageState extends State<HomePage> {
     {
       'icon': 'assets/icons/catalog.svg',
       'label': 'Katalog',
-      'widget': KatalogPage(),
+      'widget': KatalogPage(initialCategory: widget.initialCategory),
+
       'showFor': ['Pembeli', 'Penitip', 'Hunter', 'Kurir', ''],
     },
     {
