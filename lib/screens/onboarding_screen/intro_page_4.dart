@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:reuse_mart_mobile/utils/app_theme.dart';
 
-class IntroPage2 extends StatelessWidget {
-  const IntroPage2({super.key});
+class IntroPage4 extends StatelessWidget {
+  const IntroPage4({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +36,7 @@ class IntroPage2 extends StatelessWidget {
                 Column(
                   children: [
                     Text(
-                      'Jual Barang Bekas Jadi Lebih Mudah',
+                      'Donasikan Barang,\n Beri Arti Lebih',
                       style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.w700,
@@ -47,14 +47,14 @@ class IntroPage2 extends StatelessWidget {
                   ],
                 ),
                 Image.asset(
-                  'assets/onboarding/illust-2.png',
+                  'assets/onboarding/illust-4.png',
                   width: MediaQuery.of(context).size.width * 0.7,
                   fit: BoxFit.contain,
                 ),
                 Column(
                   children: [
                     Text(
-                      'Titip Barang, Kami yang Urus!',
+                      'Kalau Tak Laku, Bisa Didonasi!',
                       style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.w700,
@@ -64,7 +64,7 @@ class IntroPage2 extends StatelessWidget {
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      'Cukup titipkan barang ke ReUseMart, kami bantu proses penjualan hingga pengiriman saat barang terjual.',
+                      'Barangmu tetap bermanfaat meski tak terjual. Kami bantu salurkan ke organisasi sosial yang tepat, raih poin lebih!',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 15,

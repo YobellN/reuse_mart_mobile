@@ -4,7 +4,9 @@ import 'package:intl/intl.dart';
 // More flexible and various color definitions
 class AppColors {
   static const Color primary = Color(0xFF2CCB67);
-  static const Color secondary = Color(0xFF1EBC46);
+  static const Color secondary = Color(
+    0xFF1EBC46,
+  ); //ini ganti aja kalo kurang pas
   static const Color background = Color(0xFFF5F5F5);
   static const Color surface = Color(0xFFFFFFFF);
   static const Color error = Color(0xFFD32F2F);
@@ -17,6 +19,21 @@ class AppColors {
   static const Color accent = Color(0xFFFFC107);
   static const Color border = Color(0xFFE0E0E0);
   static const Color disabled = Color(0xFFBDBDBD);
+
+
+  //color palet onboarding
+  // hijo muda agak kuning dikit
+  static const Color lightLime = Color(0xFFE8FCD1);
+
+  //ijo muda pastel
+  static const Color mintGreen = Color(0xFFA5F4D0);
+
+  static const Color darkGreen = Color(0xFF124430); //hijo gelap untuk teks
+  static const Color emeraldGreen = Color(0xFF008236);
+  static const Color brightGreen = Color(0xFF27C863);
+
+
+
 }
 
 // More flexible and various text styles

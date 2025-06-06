@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:reuse_mart_mobile/screens/onboarding_screen/intro_page_1.dart';
 import 'package:reuse_mart_mobile/screens/onboarding_screen/intro_page_2.dart';
 import 'package:reuse_mart_mobile/screens/onboarding_screen/intro_page_3.dart';
+import 'package:reuse_mart_mobile/screens/onboarding_screen/intro_page_4.dart';
 import 'package:reuse_mart_mobile/utils/app_theme.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
@@ -26,83 +27,98 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
             controller: _controller,
             onPageChanged: (index) {
               setState(() {
-                onLastPage = (index == 2);
+                onLastPage = (index == 3);
               });
             },
-            children: [IntroPage1(), IntroPage2(), IntroPage3()],
+            children: [IntroPage1(), IntroPage2(), IntroPage3(), IntroPage4()],
           ),
 
-          Container(
-            alignment: Alignment(0, 0.8),
+          Positioned(
+            bottom: 42,
+            left: 0,
+            right: 0,
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                //skip
-                GestureDetector(
-                  onTap: () {
-                    _controller.animateToPage(
-                      3,
-                      duration: Duration(milliseconds: 500),
-                      curve: Curves.easeIn,
-                    );
-                  },
-                  child: Text(
-                    'Skip',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () {
+                      _controller.animateToPage(
+                        4,
+                        duration: Duration(milliseconds: 500),
+                        curve: Curves.easeIn,
+                      );
+                    },
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: Text(
+                        'Lewati',
+                        style: TextStyle(
+                          color: AppColors.textSecondary,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
                     ),
                   ),
                 ),
-
-                //ini dot indicator
-                SmoothPageIndicator(
-                  controller: _controller,
-                  count: 3,
-                  effect: WormEffect(
-                    dotColor: Colors.greenAccent,
-                    activeDotColor: AppColors.primary,
-                    dotHeight: 12,
-                    dotWidth: 12,
+                Expanded(
+                  child: Center(
+                    child: SmoothPageIndicator(
+                      controller: _controller,
+                      count: 4,
+                      effect: ExpandingDotsEffect(
+                        dotColor: Colors.white,
+                        activeDotColor: AppColors.brightGreen,
+                        dotHeight: 12,
+                        dotWidth: 12,
+                        expansionFactor: 3.0, // ukurang dot aktif
+                        spacing: 8, // jarak antar dot
+                      ),
+                    ),
                   ),
                 ),
-
-                //next
-                onLastPage
-                    ? GestureDetector(
-                      onTap: () {
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () {
+                      if (_controller.page!.toInt() < 3) {
+                        _controller.nextPage(
+                          duration: Duration(milliseconds: 500),
+                          curve: Curves.easeIn,
+                        );
+                      } else {
                         Navigator.pushReplacementNamed(context, '/login');
-                      },
-                      child: Text(
-                        'Login',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
+                      }
+                    },
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 16.0),
+                      padding: const EdgeInsets.symmetric(vertical: 12.0),
+                      decoration: BoxDecoration(
+                        color: AppColors.brightGreen,
+                        borderRadius: BorderRadius.circular(24.0),
                       ),
-                    )
-                    : GestureDetector(
-                      onTap: () {
-                        if (_controller.page!.toInt() < 2) {
-                          _controller.nextPage(
-                            duration: Duration(milliseconds: 500),
-                            curve: Curves.easeIn,
-                          );
-                        } else {
-                          Navigator.pushReplacementNamed(context, '/home');
-                        }
-                      },
-                      child: Text(
-                        'Next',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
+                      child: Center(
+                        child:
+                            onLastPage
+                                ? Text(
+                                  'Login',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                )
+                                : Text(
+                                  'Berikutnya',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
                       ),
                     ),
+                  ),
+                ),
               ],
             ),
           ),
