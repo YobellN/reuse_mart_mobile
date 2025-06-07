@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:reuse_mart_mobile/screens/catalogue/katalog_page.dart';
 import 'package:reuse_mart_mobile/screens/informasi_umum/informasiPage.dart';
+import 'package:reuse_mart_mobile/screens/merchandise/katalog_merch_page.dart';
 import 'package:reuse_mart_mobile/screens/onboarding_screen/onboarding_screen.dart';
 import 'package:reuse_mart_mobile/screens/profile/profilePage.dart';
 import 'package:reuse_mart_mobile/utils/app_theme.dart';
@@ -59,9 +60,9 @@ void initState() {
     },
     {
       'icon': 'assets/icons/history.svg',
-      'label': 'Riwayat',
-      'widget': Center(child: Text('Riwayat', style: AppTextStyles.heading2)),
-      'showFor': ['Pembeli', 'Penitip', 'Hunter', 'Kurir'],
+      'label': 'Merch',
+      'widget': KatalogMerchPage(),
+      'showFor': ['Pembeli'],
     },
     {
       'icon': 'assets/icons/user.svg',

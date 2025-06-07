@@ -42,7 +42,7 @@ class _KatalogPageState extends State<KatalogPage> {
   Timer? _debounce;
 
   @override
-void initState() {
+  void initState() {
     super.initState();
     _selectedCategory =
         widget.initialCategory ??
@@ -85,12 +85,16 @@ void initState() {
       _currentPage = 1;
     });
     try {
-      final kategoriParam = _selectedCategory != 'Semua' ? Uri.encodeComponent(_selectedCategory) : null;
+      final kategoriParam =
+          _selectedCategory != 'Semua'
+              ? Uri.encodeComponent(_selectedCategory)
+              : null;
       final products = await ProductService.fetchProducts(
         page: 1,
         limit: 6,
         kategori: kategoriParam,
-        search: _searchController.text.isNotEmpty ? _searchController.text : null,
+        search:
+            _searchController.text.isNotEmpty ? _searchController.text : null,
       );
       setState(() {
         _allProducts = products;
@@ -111,12 +115,16 @@ void initState() {
     });
     try {
       final nextPage = _currentPage + 1;
-      final kategoriParam = _selectedCategory != 'Semua' ? Uri.encodeComponent(_selectedCategory) : null;
+      final kategoriParam =
+          _selectedCategory != 'Semua'
+              ? Uri.encodeComponent(_selectedCategory)
+              : null;
       final products = await ProductService.fetchProducts(
         page: nextPage,
         limit: 6,
         kategori: kategoriParam,
-        search: _searchController.text.isNotEmpty ? _searchController.text : null,
+        search:
+            _searchController.text.isNotEmpty ? _searchController.text : null,
       );
       setState(() {
         _currentPage = nextPage;
@@ -414,7 +422,9 @@ void initState() {
                   width: double.infinity,
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(10),
+                    ),
                   ),
                 ),
                 Expanded(
@@ -475,17 +485,18 @@ void initState() {
             Expanded(
               child: Builder(
                 builder: (context) {
-                  final filteredProducts = _allProducts.where((product) {
-                    final matchesCategory =
-                        _selectedCategory == 'Semua' ||
-                        product.kategori.namaKategori == _selectedCategory;
-                    final matchesSearch =
-                        _searchController.text.isEmpty ||
-                        product.namaProduk.toLowerCase().contains(
-                          _searchController.text.toLowerCase(),
-                        );
-                    return matchesCategory && matchesSearch;
-                  }).toList();
+                  final filteredProducts =
+                      _allProducts.where((product) {
+                        final matchesCategory =
+                            _selectedCategory == 'Semua' ||
+                            product.kategori.namaKategori == _selectedCategory;
+                        final matchesSearch =
+                            _searchController.text.isEmpty ||
+                            product.namaProduk.toLowerCase().contains(
+                              _searchController.text.toLowerCase(),
+                            );
+                        return matchesCategory && matchesSearch;
+                      }).toList();
                   if (_isLoadingMore && _allProducts.isEmpty) {
                     return Stack(
                       children: [
