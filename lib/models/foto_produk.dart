@@ -19,4 +19,12 @@ class FotoProduk {
       thumbnail: json['thumbnail'],
     );
   }
+
+  Map<String, dynamic> toJson() => {
+    'id_foto_produk': idFotoProduk,
+    'id_produk': idProduk,
+    'path_foto': pathFoto,
+    'thumbnail': thumbnail,
+  };
+  
 }

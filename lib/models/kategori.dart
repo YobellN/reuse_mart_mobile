@@ -10,4 +10,9 @@ class Kategori {
       namaKategori: json['nama_kategori'],
     );
   }
+
+  Map<String, dynamic> toJson() => {
+    'id_kategori': idKategori,
+    'nama_kategori': namaKategori,
+  };
 }

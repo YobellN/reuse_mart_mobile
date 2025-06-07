@@ -51,6 +51,7 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
     } catch (e) {
       _produkLain = [];
     }
+    if (!mounted) return;
     setState(() {
       _isLoadingProdukLain = false;
     });
@@ -67,6 +68,7 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
     } catch (e) {
       penitip = null;
     }
+    if (!mounted) return;
     setState(() {
       _isLoadingPenitip = false;
     });
@@ -522,7 +524,10 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Penitip', style: AppTextStyles.heading3.copyWith(fontWeight: FontWeight.bold)),
+          Text(
+            'Penitip',
+            style: AppTextStyles.heading3.copyWith(fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 8),
           Card(
             color: AppColors.surface,
@@ -531,7 +536,10 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
             ),
             elevation: 2,
             child: ListTile(
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 8,
+              ),
               leading: CircleAvatar(
                 backgroundColor: AppColors.primary,
                 child: Icon(Icons.person, color: AppColors.textInverse),
@@ -714,7 +722,10 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 24),
-          Text('Produk lain dari Penitip', style: AppTextStyles.heading3.copyWith(fontWeight: FontWeight.bold)),
+          Text(
+            'Produk lain dari Penitip',
+            style: AppTextStyles.heading3.copyWith(fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 12),
           SizedBox(
             height: 240,
@@ -738,7 +749,9 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                           width: double.infinity,
                           decoration: BoxDecoration(
                             color: Colors.white,
-                            borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
+                            borderRadius: const BorderRadius.vertical(
+                              top: Radius.circular(10),
+                            ),
                           ),
                         ),
                         Padding(
@@ -746,11 +759,23 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Container(width: 100, height: 16, color: Colors.white),
+                              Container(
+                                width: 100,
+                                height: 16,
+                                color: Colors.white,
+                              ),
                               const SizedBox(height: 4),
-                              Container(width: 60, height: 14, color: Colors.white),
+                              Container(
+                                width: 60,
+                                height: 14,
+                                color: Colors.white,
+                              ),
                               const SizedBox(height: 4),
-                              Container(width: 80, height: 12, color: Colors.white),
+                              Container(
+                                width: 80,
+                                height: 12,
+                                color: Colors.white,
+                              ),
                             ],
                           ),
                         ),

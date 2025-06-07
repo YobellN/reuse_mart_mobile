@@ -1,8 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:reuse_mart_mobile/models/merchandise.dart';
 import 'package:reuse_mart_mobile/services/merch_service.dart';
 import 'package:reuse_mart_mobile/utils/api.dart';
 import 'package:reuse_mart_mobile/utils/app_theme.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class KatalogMerchPage extends StatefulWidget {
@@ -54,13 +57,28 @@ class _KatalogMerchPageState extends State<KatalogMerchPage> {
       setState(() {
         _isLoading = true;
       });
-      final merch = await MerchService.fetchMerchandise();
+
+      final prefs = await SharedPreferences.getInstance();
+      final merch = prefs.getString('cached_merchandise');
+      if (merch != null) {
+        setState(() {
+          _listMerch =
+              (json.decode(merch) as List)
+                  .map((e) => Merchandise.fromJson(e))
+                  .toList();
+          _filteredMerch = _listMerch;
+          _isLoading = false;
+        });
+      }
+
+      final freshMerch = await MerchService.fetchMerchandise();
       if (!mounted) return;
       setState(() {
-        _listMerch = merch;
-        _filteredMerch = merch;
+        _listMerch = freshMerch;
+        _filteredMerch = freshMerch;
         _isLoading = false;
       });
+      
     } catch (e) {
       if (!mounted) return;
       setState(() {
@@ -189,16 +207,22 @@ class _KatalogMerchPageState extends State<KatalogMerchPage> {
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: _loadingKlaim ? null : () {
-                        showDialog<bool>(
-                          context: context,
-                          builder:
-                              (context) =>
-                                  _buildConfirmationDialog(merchandise),
-                        );
-                      },
+                      onPressed:
+                          _loadingKlaim
+                              ? null
+                              : () {
+                                showDialog<bool>(
+                                  context: context,
+                                  builder:
+                                      (context) =>
+                                          _buildConfirmationDialog(merchandise),
+                                );
+                              },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: _loadingKlaim ? AppColors.disabled : AppColors.primary,
+                        backgroundColor:
+                            _loadingKlaim
+                                ? AppColors.disabled
+                                : AppColors.primary,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
@@ -388,16 +412,26 @@ class _KatalogMerchPageState extends State<KatalogMerchPage> {
             _buildSearchBar(),
             const SizedBox(height: 16),
             Expanded(
-              child: Builder(
-                builder: (context) {
-                  if (_isLoading) {
-                    return _buildMerchGridSkeleton();
-                  }
-                  if (_filteredMerch.isEmpty) {
-                    return Center(child: Text('Tidak ada merchandise.'));
-                  }
-                  return _buildMerchGrid(_filteredMerch);
-                },
+              child: RefreshIndicator(
+                onRefresh: _fetchMerchandise,
+                child: Builder(
+                  builder: (context) {
+                    if (_isLoading) {
+                      return _buildMerchGridSkeleton();
+                    }
+                    if (_filteredMerch.isEmpty) {
+                      return ListView(
+                        children: [
+                          SizedBox(
+                            height: 300,
+                            child: Center(child: Text('Tidak ada merchandise.')),
+                          ),
+                        ],
+                      );
+                    }
+                    return _buildMerchGrid(_filteredMerch);
+                  },
+                ),
               ),
             ),
           ],

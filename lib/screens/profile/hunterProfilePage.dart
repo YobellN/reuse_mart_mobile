@@ -1,16 +1,21 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:reuse_mart_mobile/models/pegawai.dart';
 import 'package:reuse_mart_mobile/services/auth_service.dart';
+import 'package:reuse_mart_mobile/services/hunter_service.dart';
 import 'package:reuse_mart_mobile/utils/app_theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
-class HunterProfilePage extends StatelessWidget {
+class HunterProfilePage extends StatefulWidget {
   final String name;
   final String email;
   final String phone;
   final String? photoUrl;
   final int poin;
 
-  HunterProfilePage({
+  const HunterProfilePage({
     super.key,
     required this.name,
     required this.email,
@@ -19,12 +24,45 @@ class HunterProfilePage extends StatelessWidget {
     required this.poin,
   });
 
+  @override
+  State<HunterProfilePage> createState() => _HunterProfilePageState();
+}
+
+class _HunterProfilePageState extends State<HunterProfilePage> {
   final features = [
     {'icon': Icons.share, 'title': 'Affiliate commission', 'isNew': true},
     {'icon': Icons.pan_tool_alt, 'title': 'Referral', 'isNew': true},
     {'icon': Icons.card_giftcard, 'title': 'Scratch & Win', 'isNew': true},
   ];
 
+  Pegawai? _pegawai;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    getHunter();
+  }
+
+  Future<void> getHunter() async {
+    final prefs = await SharedPreferences.getInstance();
+    final cached = prefs.getString('cached_hunter');
+    if (cached != null) {
+      if (!mounted) return;
+      setState(() {
+        _pegawai = Pegawai.fromJson(jsonDecode(cached));
+        _isLoading = false;
+      });
+    }
+    final fresh = await HunterService.getHunter();
+    if (fresh != null) {
+      if (!mounted) return;
+      setState(() {
+        _pegawai = fresh;
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,88 +74,102 @@ class HunterProfilePage extends StatelessWidget {
             Container(height: 120, color: AppColors.primary),
             Padding(
               padding: const EdgeInsets.only(top: 30, left: 18, right: 18),
-              child: Column(
-                children: [
-                  Container(
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: const Color.fromARGB(255, 213, 213, 213),
-                        width: 1,
-                      ),
-                      boxShadow: [
-                        BoxShadow(color: Colors.black12, blurRadius: 4),
-                      ],
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.only(
-                        top: 60,
-                        bottom: 24,
-                        left: 16,
-                        right: 16,
-                      ),
-                      child: Column(
-                        children: [
-                          Text(
-                            name,
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.textPrimary,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(phone, style: AppTextStyles.body),
-                          const SizedBox(height: 2),
-                          Text(email, style: AppTextStyles.caption),
-                          const SizedBox(height: 16),
-                          Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 12,
-                              horizontal: 12,
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppColors.lightMintGreen,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "Poin",
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w700,
-                                    color: AppColors.textPrimary,
-                                  ),
-                                ),
-                                const SizedBox(height: 8),
-                                Row(
-                                  children: [
-                                    const Icon(
-                                      Icons.workspace_premium,
-                                      color: AppColors.softPastelGreen,
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Text(
-                                      poin.toString(),
-                                      style: AppTextStyles.body.copyWith(
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
+              child: Skeletonizer(
+                enabled: _isLoading,
+                child: Column(
+                  children: [
+                    Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: const Color.fromARGB(255, 213, 213, 213),
+                          width: 1,
+                        ),
+                        boxShadow: [
+                          BoxShadow(color: Colors.black12, blurRadius: 4),
                         ],
                       ),
+                      child: Padding(
+                        padding: const EdgeInsets.only(
+                          top: 60,
+                          bottom: 24,
+                          left: 16,
+                          right: 16,
+                        ),
+                        child: Column(
+                          children: [
+                            Text(
+                              _pegawai?.user.nama ?? 'John Doe',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.textPrimary,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              _pegawai?.user.noTelp ?? '+628123456789',
+                              style: AppTextStyles.body,
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              _pegawai?.user.email ?? 'N4oLb@example.com',
+                              style: AppTextStyles.caption,
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              'Tanggal Lahir:${formatTanggal(_pegawai?.tanggalLahir)}',
+                              style: AppTextStyles.caption,
+                            ),
+                            const SizedBox(height: 16),
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 12,
+                                horizontal: 12,
+                              ),
+                              decoration: BoxDecoration(
+                                color: AppColors.lightMintGreen,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Komisi",
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w700,
+                                      color: AppColors.textPrimary,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.attach_money_outlined,
+                                        color: AppColors.softPastelGreen,
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        formatHarga(_pegawai?.totalKomisi ?? 0),
+                                        style: AppTextStyles.body.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
             Positioned(
@@ -233,7 +285,6 @@ class HunterProfilePage extends StatelessWidget {
             ),
           ),
         ),
-       
       ],
     );
   }
