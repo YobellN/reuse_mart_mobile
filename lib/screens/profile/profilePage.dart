@@ -28,14 +28,6 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print('🛠️ ProfilePage Loaded');
-    print('Role: $role');
-    print('Name: $name');
-    print('Email: $email');
-    print('Nomor: $nomorTelpon');
-    print('Poin: $poin');
-    print('Komisi: $komisi');
-    print('PhotoUrl: $photoUrl');
 
     Widget content;
     switch (role) {
