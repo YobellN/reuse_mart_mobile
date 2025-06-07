@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:reuse_mart_mobile/screens/profile/hunterProfilePage.dart';
 import 'package:reuse_mart_mobile/screens/profile/kurirProfilePage.dart';
 import 'package:reuse_mart_mobile/screens/profile/pembeli_profile_page.dart';
+import 'package:reuse_mart_mobile/screens/profile/penitip_profile_page.dart';
 import 'package:reuse_mart_mobile/utils/app_theme.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -11,6 +12,7 @@ class ProfilePage extends StatelessWidget {
   final String? photoUrl;
   final int? komisi;
   final int? poin;
+  final double? saldo;
   final String? nomorTelpon;
   final List<Map<String, dynamic>>? komisiHistory;
 
@@ -23,6 +25,7 @@ class ProfilePage extends StatelessWidget {
     this.komisi,
     this.komisiHistory,
     this.poin,
+    this.saldo,
     this.nomorTelpon,
   });
 
@@ -54,6 +57,16 @@ class ProfilePage extends StatelessWidget {
           photoUrl: photoUrl,
           phone: nomorTelpon ?? '',
           poin: poin ?? 0,
+        );
+        break;
+      case 'Penitip':
+        content = PenitipProfileContent(
+          name: name,
+          email: email,
+          photoUrl: photoUrl,
+          phone: nomorTelpon ?? '',
+          poin: poin ?? 0,
+          saldo: saldo ?? 0,
         );
         break;
       default:

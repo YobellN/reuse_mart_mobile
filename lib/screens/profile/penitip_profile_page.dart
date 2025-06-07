@@ -1,22 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:reuse_mart_mobile/screens/riwayat_transaksi_pembeli/riwayat_pembelian.dart';
 import 'package:reuse_mart_mobile/utils/app_theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class PembeliProfileContent extends StatelessWidget {
+class PenitipProfileContent extends StatelessWidget {
   final String name;
   final String email;
   final String phone;
   final String? photoUrl;
   final int poin;
+  final double saldo;
 
-  PembeliProfileContent({
+  PenitipProfileContent({
     super.key,
     required this.name,
     required this.email,
     required this.phone,
     this.photoUrl,
     required this.poin,
+    required this.saldo,
   });
 
   final features = [
@@ -79,45 +80,87 @@ class PembeliProfileContent extends StatelessWidget {
                           const SizedBox(height: 2),
                           Text(email, style: AppTextStyles.caption),
                           const SizedBox(height: 16),
-                          Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 12,
-                              horizontal: 12,
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppColors.lightMintGreen,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "Poin",
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w700,
-                                    color: AppColors.textPrimary,
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 12,
+                                    horizontal: 12,
+                                  ),
+                                  margin: const EdgeInsets.only(right: 8),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.lightMintGreen,
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        "Poin",
+                                        style: AppTextStyles.bodyBold,
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Row(
+                                        children: [
+                                          const Icon(
+                                            Icons.workspace_premium,
+                                            color: AppColors.softPastelGreen,
+                                          ),
+                                          const SizedBox(width: 8),
+                                          Text(
+                                            poin.toString(),
+                                            style: AppTextStyles.body.copyWith(
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
                                   ),
                                 ),
-                                const SizedBox(height: 8),
-                                Row(
-                                  children: [
-                                    const Icon(
-                                      Icons.workspace_premium,
-                                      color: AppColors.softPastelGreen,
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Text(
-                                      poin.toString(),
-                                      style: AppTextStyles.body.copyWith(
-                                        fontWeight: FontWeight.bold,
+                              ),
+                              Expanded(
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 12,
+                                    horizontal: 12,
+                                  ),
+                                  margin: const EdgeInsets.only(left: 8),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.lightMintGreen,
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        "Saldo",
+                                        style: AppTextStyles.bodyBold,
                                       ),
-                                    ),
-                                  ],
+                                      const SizedBox(height: 8),
+                                      Row(
+                                        children: [
+                                          const Icon(
+                                            Icons.account_balance_wallet,
+                                            color: AppColors.softPastelGreen,
+                                          ),
+                                          const SizedBox(width: 8),
+                                          Text(
+                                            'Rp ${saldo.toStringAsFixed(0)}',
+                                            style: AppTextStyles.body.copyWith(
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
@@ -141,7 +184,7 @@ class PembeliProfileContent extends StatelessWidget {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     image: DecorationImage(
-                      image: AssetImage('assets/icons/pembeli.webp'),
+                      image: AssetImage('assets/icons/penitip.webp'),
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -239,7 +282,6 @@ class PembeliProfileContent extends StatelessWidget {
             ),
           ),
         ),
-       
       ],
     );
   }
@@ -261,39 +303,11 @@ class PesananSayaSection extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                "Pesanan Saya",
+                "Shopping order",
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w600,
                   color: AppColors.textPrimary,
-                ),
-              ),
-              GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const RiwayatPembelianPage(),
-                    ),
-                  );
-                },
-                child: Row(
-                  children: [
-                    Text(
-                      "Lihat semua riwayat",
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.softPastelGreen,
-                      ),
-                    ),
-                    const SizedBox(width: 3),
-                    const Icon(
-                      Icons.chevron_right,
-                      size: 20,
-                      color: AppColors.softPastelGreen,
-                    ),
-                  ],
                 ),
               ),
             ],
@@ -302,65 +316,13 @@ class PesananSayaSection extends StatelessWidget {
 
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _OrderIcon(
-                icon: Icons.payments_outlined,
-                label: 'Belum Bayar',
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder:
-                          (_) => RiwayatPembelianPage(
-                            initialStatus: 'Belum Dibayar',
-                          ),
-                    ),
-                  );
-                },
-              ),
-              _OrderIcon(
-                icon: Icons.inventory_2_outlined,
-                label: 'Disiapkan',
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder:
-                          (_) =>
-                              RiwayatPembelianPage(initialStatus: 'Disiapkan'),
-                    ),
-                  );
-                },
-              ),
-              _OrderIcon(
-                icon: Icons.local_shipping_outlined,
-                label: 'Dikirim',
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder:
-                          (_) => RiwayatPembelianPage(initialStatus: 'Dikirim'),
-                    ),
-                  );
-                },
-              ),
-              _OrderIcon(
-                icon: Icons.inventory_2,
-                label: 'Selesai',
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder:
-                          (_) => RiwayatPembelianPage(initialStatus: 'Selesai'),
-                    ),
-                  );
-                },
-              ),
+            children: const [
+              _OrderIcon(icon: Icons.payments_outlined, label: 'Waiting'),
+              _OrderIcon(icon: Icons.inventory_2_outlined, label: 'Current'),
+              _OrderIcon(icon: Icons.inventory_2, label: 'Completed'),
+              _OrderIcon(icon: Icons.reviews, label: 'Review'),
             ],
           ),
-
         ],
       ),
     );
@@ -370,27 +332,17 @@ class PesananSayaSection extends StatelessWidget {
 class _OrderIcon extends StatelessWidget {
   final IconData icon;
   final String label;
-  final VoidCallback onTap;
 
-  const _OrderIcon({
-    required this.icon,
-    required this.label,
-    required this.onTap,
-  });
+  const _OrderIcon({required this.icon, required this.label});
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(8),
-      child: Column(
-        children: [
-          Icon(icon, color: AppColors.softPastelGreen, size: 30),
-          const SizedBox(height: 6),
-          Text(label, style: AppTextStyles.caption),
-        ],
-      ),
+    return Column(
+      children: [
+        Icon(icon, color: AppColors.softPastelGreen, size: 30),
+        const SizedBox(height: 6),
+        Text(label, style: AppTextStyles.caption),
+      ],
     );
   }
 }
-
