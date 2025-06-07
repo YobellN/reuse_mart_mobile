@@ -9,7 +9,7 @@ class AppColors {
   ); //ini ganti aja kalo kurang pas
   static const Color background = Color(0xFFF5F5F5);
   static const Color surface = Color(0xFFFFFFFF);
-  static const Color error = Color(0xFFD32F2F);
+  static const Color error = Color.fromARGB(255, 245, 71, 71);
   static const Color warning = Color(0xFFFFA000);
   static const Color success = Color(0xFF388E3C);
   static const Color info = Color(0xFF1976D2);

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:reuse_mart_mobile/screens/catalogue/katalog_page.dart';
 import 'package:reuse_mart_mobile/screens/informasi_umum/informasiPage.dart';
+import 'package:reuse_mart_mobile/screens/merchandise/katalog_merch_page.dart';
 import 'package:reuse_mart_mobile/screens/onboarding_screen/onboarding_screen.dart';
 import 'package:reuse_mart_mobile/screens/profile/profilePage.dart';
 import 'package:reuse_mart_mobile/utils/app_theme.dart';
@@ -21,11 +22,13 @@ class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
   String _token = '';
   String _role = '';
+  String? _initialCategory;
 
   @override
-void initState() {
+  void initState() {
     super.initState();
     _selectedIndex = widget.initialIndex;
+    _initialCategory = widget.initialCategory;
     getUser();
   }
 
@@ -53,15 +56,15 @@ void initState() {
     {
       'icon': 'assets/icons/catalog.svg',
       'label': 'Katalog',
-      'widget': KatalogPage(initialCategory: widget.initialCategory),
+      'widget': KatalogPage(initialCategory: _initialCategory),
 
       'showFor': ['Pembeli', 'Penitip', 'Hunter', 'Kurir', ''],
     },
     {
       'icon': 'assets/icons/history.svg',
-      'label': 'Riwayat',
-      'widget': Center(child: Text('Riwayat', style: AppTextStyles.heading2)),
-      'showFor': ['Pembeli', 'Penitip', 'Hunter', 'Kurir'],
+      'label': 'Merch',
+      'widget': KatalogMerchPage(),
+      'showFor': ['Pembeli'],
     },
     {
       'icon': 'assets/icons/user.svg',
@@ -80,12 +83,6 @@ void initState() {
       'icon': 'assets/icons/login.svg',
       'label': 'Login',
       'widget': Container(),
-      'showFor': [''],
-    },
-    {
-      'icon': 'assets/icons/login.svg',
-      'label': 'Ke Onboarding',
-      'widget': OnBoardingScreen(),
       'showFor': [''],
     },
   ];
@@ -132,7 +129,6 @@ void initState() {
           .map((item) => item['widget'] as Widget)
           .toList();
 
-
   void _onItemTapped(int index) async {
     if (items[index].label == 'Login' && _token == '') {
       final result = await Navigator.pushNamed(context, '/login');
@@ -144,6 +140,13 @@ void initState() {
       }
       return;
     }
+
+    if (items[index].label == 'Katalog') {
+      setState(() {
+        _initialCategory = null;
+      });
+    }
+
     setState(() {
       _selectedIndex = index;
     });

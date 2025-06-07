@@ -4,7 +4,6 @@ import 'package:reuse_mart_mobile/screens/profile/kurirProfilePage.dart';
 import 'package:reuse_mart_mobile/screens/profile/pembeli_profile_page.dart';
 import 'package:reuse_mart_mobile/utils/app_theme.dart';
 
-
 class ProfilePage extends StatelessWidget {
   final String role;
   final String name;
@@ -24,7 +23,7 @@ class ProfilePage extends StatelessWidget {
     this.komisi,
     this.komisiHistory,
     this.poin,
-    this.nomorTelpon
+    this.nomorTelpon,
   });
 
   @override
@@ -37,7 +36,7 @@ class ProfilePage extends StatelessWidget {
     print('Poin: $poin');
     print('Komisi: $komisi');
     print('PhotoUrl: $photoUrl');
-  
+
     Widget content;
     switch (role) {
       case 'Hunter':
@@ -45,12 +44,16 @@ class ProfilePage extends StatelessWidget {
           name: name,
           email: email,
           photoUrl: photoUrl,
-          komisi: komisi ?? 0,
-          komisiHistory: komisiHistory ?? [],
+          phone: nomorTelpon ?? '',
+          poin: poin ?? 0,
         );
         break;
       case 'Kurir':
-        content = KurirProfilePage(name: name, email: email, photoUrl: photoUrl);
+        content = KurirProfilePage(
+          name: name,
+          email: email,
+          photoUrl: photoUrl,
+        );
         break;
       case 'Pembeli':
         content = PembeliProfileContent(
@@ -71,10 +74,7 @@ class ProfilePage extends StatelessWidget {
         backgroundColor: AppColors.primary,
         elevation: 0,
       ),
-      body: SingleChildScrollView(
-       
-        child: content,
-      ),
+      body: SingleChildScrollView(child: content),
     );
   }
 }

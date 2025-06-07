@@ -47,6 +47,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                         duration: Duration(milliseconds: 500),
                         curve: Curves.easeIn,
                       );
+                      Navigator.pushReplacementNamed(context, '/home');
                     },
                     child: Align(
                       alignment: Alignment.center,
