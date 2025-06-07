@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:reuse_mart_mobile/utils/api.dart';
 import 'package:reuse_mart_mobile/models/produk.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProductService {
   static Future<List<Produk>> fetchProducts({int page = 1, int limit = 6, String? kategori, String? search}) async {
@@ -17,9 +18,11 @@ class ProductService {
       if (response.statusCode == 200) {
         final Map<String, dynamic> jsonBody = json.decode(response.body);
 
-        if (jsonBody.containsKey('data') &&
-            jsonBody['data'] is Map &&
-            jsonBody['data']['data'] is List) {
+        if (jsonBody.containsKey('data') && jsonBody['data'] is Map && jsonBody['data']['data'] is List) {
+          if(page == 1) {
+            final prefs = await SharedPreferences.getInstance();
+            prefs.setString('cached_produk', json.encode(jsonBody['data']['data']));
+          }
           final List<dynamic> dataList = jsonBody['data']['data'];
           return dataList.map((e) => Produk.fromJson(e)).toList();
         } else {

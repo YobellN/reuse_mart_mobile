@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:reuse_mart_mobile/models/produk.dart';
 import 'package:reuse_mart_mobile/screens/catalogue/detail_produk_page.dart';
 import 'package:reuse_mart_mobile/services/product_service.dart';
 import 'package:reuse_mart_mobile/utils/api.dart';
 import 'package:reuse_mart_mobile/utils/app_theme.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class KatalogPage extends StatefulWidget {
@@ -44,7 +46,7 @@ class _KatalogPageState extends State<KatalogPage> {
   @override
   void initState() {
     super.initState();
-    _selectedCategory = widget.initialCategory ?? 'Semua'; 
+    _selectedCategory = widget.initialCategory ?? 'Semua';
     _searchController.addListener(_onSearchChangedDebounced);
     _fetchInitialProducts();
     _scrollController.addListener(_onScroll);
@@ -83,23 +85,42 @@ class _KatalogPageState extends State<KatalogPage> {
       _currentPage = 1;
     });
     try {
+      final prefs = await SharedPreferences.getInstance();
+      final products = prefs.getString('cached_produk');
+      if (products != null) {
+        if (!mounted) return;
+        setState(() {
+          _allProducts =
+              (json.decode(products) as List)
+                  .map((e) => Produk.fromJson(e))
+                  .toList();
+          _hasMore = _allProducts.length == 6;
+          _isLoadingMore = false;
+        });
+        return;
+      }
+
       final kategoriParam =
           _selectedCategory != 'Semua'
               ? Uri.encodeComponent(_selectedCategory)
               : null;
-      final products = await ProductService.fetchProducts(
+
+      final freshProducts = await ProductService.fetchProducts(
         page: 1,
         limit: 6,
         kategori: kategoriParam,
         search:
             _searchController.text.isNotEmpty ? _searchController.text : null,
       );
+
+      if (!mounted) return;
       setState(() {
-        _allProducts = products;
-        _hasMore = products.length == 6;
+        _allProducts = freshProducts;
+        _hasMore = freshProducts.length == 6;
         _isLoadingMore = false;
       });
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         _isLoadingMore = false;
       });
@@ -124,6 +145,8 @@ class _KatalogPageState extends State<KatalogPage> {
         search:
             _searchController.text.isNotEmpty ? _searchController.text : null,
       );
+
+      if (!mounted) return;
       setState(() {
         _currentPage = nextPage;
         _allProducts.addAll(products);

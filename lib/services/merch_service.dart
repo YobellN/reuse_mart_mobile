@@ -22,6 +22,7 @@ class MerchService {
       if (response.statusCode == 200) {
         final Map<String, dynamic> jsonBody = json.decode(response.body);
         if (jsonBody.containsKey('data')) {
+          prefs.setString('cached_merchandise', json.encode(jsonBody['data']));
           final List<dynamic> dataList = jsonBody['data'];
           return dataList.map((e) => Merchandise.fromJson(e)).toList();
         }

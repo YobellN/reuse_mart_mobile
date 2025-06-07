@@ -52,6 +52,23 @@ class Produk {
           .toList(),
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id_produk': idProduk,
+      'id_kategori': idKategori,
+      'nama_produk': namaProduk,
+      'deskripsi_produk': deskripsiProduk,
+      'harga_produk': hargaProduk,
+      'status_akhir_produk': statusAkhirProduk,
+      'status_ketersediaan': statusKetersediaan,
+      'waktu_garansi': waktuGaransi,
+      'status_produk_hunting': statusProdukHunting,
+      'rating': rating,
+      'kategori': kategori.toJson(),
+      'foto_produk': fotoProduk.map((e) => e.toJson()).toList(),
+    };
+  }
 }
 
 
