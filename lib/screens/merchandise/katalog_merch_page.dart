@@ -17,6 +17,7 @@ class _KatalogMerchPageState extends State<KatalogMerchPage> {
   List<Merchandise> _listMerch = [];
   List<Merchandise> _filteredMerch = [];
   bool _isLoading = true;
+  bool _loadingKlaim = false;
 
   @override
   void initState() {
@@ -37,15 +38,22 @@ class _KatalogMerchPageState extends State<KatalogMerchPage> {
       if (query.isEmpty) {
         _filteredMerch = _listMerch;
       } else {
-        _filteredMerch = _listMerch.where((merch) =>
-          merch.namaMerchandise.toLowerCase().contains(query)
-        ).toList();
+        _filteredMerch =
+            _listMerch
+                .where(
+                  (merch) =>
+                      merch.namaMerchandise.toLowerCase().contains(query),
+                )
+                .toList();
       }
     });
   }
 
   Future<void> _fetchMerchandise() async {
     try {
+      setState(() {
+        _isLoading = true;
+      });
       final merch = await MerchService.fetchMerchandise();
       if (!mounted) return;
       setState(() {
@@ -68,7 +76,7 @@ class _KatalogMerchPageState extends State<KatalogMerchPage> {
         crossAxisCount: 2,
         mainAxisSpacing: 16,
         crossAxisSpacing: 16,
-        childAspectRatio: 0.75,
+        childAspectRatio: 0.6,
       ),
       itemBuilder: (context, index) {
         final merchandise = merch[index];
@@ -98,7 +106,9 @@ class _KatalogMerchPageState extends State<KatalogMerchPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(14)),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(14),
+              ),
               child: Image.network(
                 '${Api.storageUrl}foto_merchandise/${merchandise.fotoMerchandise}',
                 height: 140,
@@ -114,13 +124,18 @@ class _KatalogMerchPageState extends State<KatalogMerchPage> {
                     ),
                   );
                 },
-                errorBuilder: (context, error, stackTrace) => Container(
-                  height: 120,
-                  color: AppColors.disabled,
-                  child: const Center(
-                    child: Icon(Icons.broken_image, color: Colors.white54, size: 40),
-                  ),
-                ),
+                errorBuilder:
+                    (context, error, stackTrace) => Container(
+                      height: 120,
+                      color: AppColors.disabled,
+                      child: const Center(
+                        child: Icon(
+                          Icons.broken_image,
+                          color: Colors.white54,
+                          size: 40,
+                        ),
+                      ),
+                    ),
               ),
             ),
             Padding(
@@ -137,7 +152,11 @@ class _KatalogMerchPageState extends State<KatalogMerchPage> {
                   const SizedBox(height: 8),
                   Row(
                     children: [
-                      Icon(Icons.card_giftcard, size: 16, color: AppColors.primary),
+                      Icon(
+                        Icons.card_giftcard,
+                        size: 16,
+                        color: AppColors.primary,
+                      ),
                       const SizedBox(width: 6),
                       Text(
                         '${merchandise.poinPenukaran} Poin',
@@ -152,7 +171,11 @@ class _KatalogMerchPageState extends State<KatalogMerchPage> {
                   const SizedBox(height: 6),
                   Row(
                     children: [
-                      Icon(Icons.inventory_2_rounded, size: 15, color: AppColors.accent),
+                      Icon(
+                        Icons.inventory_2_rounded,
+                        size: 15,
+                        color: AppColors.accent,
+                      ),
                       const SizedBox(width: 6),
                       Text(
                         'Stok: ${merchandise.stok}',
@@ -161,6 +184,32 @@ class _KatalogMerchPageState extends State<KatalogMerchPage> {
                         overflow: TextOverflow.ellipsis,
                       ),
                     ],
+                  ),
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: _loadingKlaim ? null : () {
+                        showDialog<bool>(
+                          context: context,
+                          builder:
+                              (context) =>
+                                  _buildConfirmationDialog(merchandise),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: _loadingKlaim ? AppColors.disabled : AppColors.primary,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        textStyle: AppTextStyles.bodyBold.copyWith(
+                          color: Colors.white,
+                        ),
+                        elevation: 0,
+                      ),
+                      child: const Text('Klaim'),
+                    ),
                   ),
                 ],
               ),
@@ -180,7 +229,8 @@ class _KatalogMerchPageState extends State<KatalogMerchPage> {
           crossAxisCount: 2,
           mainAxisSpacing: 16,
           crossAxisSpacing: 16,
-          childAspectRatio: 0.75,),
+          childAspectRatio: 0.6,
+        ),
         itemCount: 6,
         itemBuilder: (context, index) {
           return Container(
@@ -240,6 +290,80 @@ class _KatalogMerchPageState extends State<KatalogMerchPage> {
         ),
         style: AppTextStyles.body,
       ),
+    );
+  }
+
+  Widget _buildConfirmationDialog(Merchandise merchandise) {
+    return AlertDialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      title: Row(
+        children: [
+          Icon(Icons.help_outline, color: AppColors.primary),
+          const SizedBox(width: 8),
+          Text('Konfirmasi Klaim', style: AppTextStyles.heading3),
+        ],
+      ),
+      content: Text(
+        'Apakah Anda yakin ingin klaim merchandise ini? (${merchandise.namaMerchandise})',
+        style: AppTextStyles.body,
+      ),
+
+      actionsPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context, false),
+          style: TextButton.styleFrom(
+            foregroundColor: AppColors.textSecondary,
+            textStyle: AppTextStyles.body,
+          ),
+          child: const Text('Batal'),
+        ),
+        ElevatedButton(
+          onPressed: () async {
+            Navigator.pop(context, true);
+            setState(() {
+              _loadingKlaim = true;
+            });
+            final response = await MerchService.klaimMerchandise(
+              merchandise.idMerchandise,
+            );
+            if (response != '') {
+              setState(() {
+                _loadingKlaim = false;
+              });
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    response,
+                    style: AppTextStyles.body.copyWith(
+                      color: AppColors.textInverse,
+                    ),
+                  ),
+                  backgroundColor:
+                      response.contains('Berhasil') == true
+                          ? AppColors.primary
+                          : AppColors.error,
+                  behavior: SnackBarBehavior.floating,
+                  margin: const EdgeInsets.all(16),
+                ),
+              );
+              response.contains('Berhasil') == true
+                  ? await _fetchMerchandise()
+                  : null;
+            }
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.primary,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+            textStyle: AppTextStyles.bodyBold.copyWith(color: Colors.white),
+            elevation: 0,
+          ),
+          child: const Text('Klaim'),
+        ),
+      ],
     );
   }
 

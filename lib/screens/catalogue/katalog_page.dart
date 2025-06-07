@@ -44,9 +44,7 @@ class _KatalogPageState extends State<KatalogPage> {
   @override
   void initState() {
     super.initState();
-    _selectedCategory =
-        widget.initialCategory ??
-        'Semua'; //ini juga ku tambahin ya bel, biar bisa konek ke home page (dina)
+    _selectedCategory = widget.initialCategory ?? 'Semua'; 
     _searchController.addListener(_onSearchChangedDebounced);
     _fetchInitialProducts();
     _scrollController.addListener(_onScroll);

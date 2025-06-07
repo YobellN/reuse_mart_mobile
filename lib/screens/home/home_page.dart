@@ -22,11 +22,13 @@ class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
   String _token = '';
   String _role = '';
+  String? _initialCategory;
 
   @override
-void initState() {
+  void initState() {
     super.initState();
     _selectedIndex = widget.initialIndex;
+    _initialCategory = widget.initialCategory;
     getUser();
   }
 
@@ -54,7 +56,7 @@ void initState() {
     {
       'icon': 'assets/icons/catalog.svg',
       'label': 'Katalog',
-      'widget': KatalogPage(initialCategory: widget.initialCategory),
+      'widget': KatalogPage(initialCategory: _initialCategory),
 
       'showFor': ['Pembeli', 'Penitip', 'Hunter', 'Kurir', ''],
     },
@@ -131,7 +133,6 @@ void initState() {
           .map((item) => item['widget'] as Widget)
           .toList();
 
-
   void _onItemTapped(int index) async {
     if (items[index].label == 'Login' && _token == '') {
       final result = await Navigator.pushNamed(context, '/login');
@@ -143,6 +144,13 @@ void initState() {
       }
       return;
     }
+
+    if (items[index].label == 'Katalog') {
+      setState(() {
+        _initialCategory = null;
+      });
+    }
+
     setState(() {
       _selectedIndex = index;
     });
