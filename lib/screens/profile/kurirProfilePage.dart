@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:reuse_mart_mobile/services/auth_service.dart';
 import 'package:reuse_mart_mobile/utils/app_theme.dart';
 
 class KurirProfilePage extends StatelessWidget {
@@ -52,6 +53,33 @@ class KurirProfilePage extends StatelessWidget {
             leading: Icon(Icons.delivery_dining, color: AppColors.primary),
             title: Text('Akun kurir untuk mengantar pesanan', style: AppTextStyles.bodyBold),
             subtitle: Text('Antarkan pesanan pelanggan dengan cepat dan aman.', style: AppTextStyles.caption),
+          ),
+        ),
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(color: Colors.white),
+          child: SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: () => AuthService.logout(context),
+              icon: const Icon(Icons.logout, color: Colors.white),
+              label: const Text(
+                "Logout",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                ),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                elevation: 2,
+              ),
+            ),
           ),
         ),
       ],

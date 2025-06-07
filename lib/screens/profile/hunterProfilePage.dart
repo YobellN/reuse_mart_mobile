@@ -123,16 +123,22 @@ class HunterProfilePage extends StatelessWidget {
             Positioned(
               top: 0,
               left: MediaQuery.of(context).size.width / 2 - 40,
-              child: CircleAvatar(
-                radius: 40,
-                backgroundColor: Colors.white,
-                child: CircleAvatar(
-                  radius: 36,
-                  backgroundImage:
-                      photoUrl != null
-                          ? NetworkImage(photoUrl!)
-                          : const AssetImage('assets/images/default_avatar.png')
-                              as ImageProvider,
+              child: Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white,
+                ),
+                child: Container(
+                  margin: const EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    image: DecorationImage(
+                      image: AssetImage('assets/icons/hunter.webp'),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
                 ),
               ),
             ),
