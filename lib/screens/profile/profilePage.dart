@@ -45,8 +45,8 @@ class ProfilePage extends StatelessWidget {
           name: name,
           email: email,
           photoUrl: photoUrl,
-          komisi: komisi ?? 0,
-          komisiHistory: komisiHistory ?? [],
+          phone: nomorTelpon ?? '',
+          poin: poin ?? 0,
         );
         break;
       case 'Kurir':
@@ -72,8 +72,6 @@ class ProfilePage extends StatelessWidget {
         elevation: 0,
       ),
       body: SingleChildScrollView(
-        padding:
-            role == 'Pembeli' ? EdgeInsets.zero : const EdgeInsets.all(24.0),
         child: content,
       ),
     );

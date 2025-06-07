@@ -85,12 +85,6 @@ class _HomePageState extends State<HomePage> {
       'widget': Container(),
       'showFor': [''],
     },
-    {
-      'icon': 'assets/icons/login.svg',
-      'label': 'Ke Onboarding',
-      'widget': OnBoardingScreen(),
-      'showFor': [''],
-    },
   ];
 
   List<BottomNavigationBarItem> get items {
