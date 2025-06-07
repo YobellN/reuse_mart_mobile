@@ -23,6 +23,7 @@ class AppColors {
 
   //color palet onboarding
   static const Color lightLime = Color(0xFFE8FCD1);
+  static const Color lightMintGreen = Color.fromARGB(255, 224, 255, 241);
   static const Color mintGreen = Color(0xFFA5F4D0);
   static const Color darkGreen = Color(0xFF124430); //hijo gelap untuk teks
   static const Color emeraldGreen = Color(0xFF008236);
@@ -113,6 +114,13 @@ class AppTextStyles {
   static const TextStyle error = TextStyle(
     fontSize: 14,
     color: AppColors.error,
+    fontFamily: 'Plus Jakarta Sans',
+  );
+  
+  static const TextStyle appBarText = TextStyle(
+    fontSize: 20,
+    fontWeight: FontWeight.w600,
+    color: Colors.white,
     fontFamily: 'Plus Jakarta Sans',
   );
 }
