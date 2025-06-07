@@ -95,14 +95,6 @@ class _InformasiPageState extends State<InformasiPage> {
     },
   ];
 
-
-  void logout(BuildContext context) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('token');
-    await prefs.remove('role');
-    Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
-  }
-
   Widget _buildTopSellerSection() {
     final now = DateTime.now();
     final lastMonth = DateTime(now.year, now.month - 1);

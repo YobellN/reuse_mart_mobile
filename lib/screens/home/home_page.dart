@@ -71,6 +71,8 @@ void initState() {
         name: "John Doe",
         role: _role,
         photoUrl: "https://i.pravatar.cc/300?img=1",
+        poin: 100,
+        nomorTelpon: "08123456789",
       ),
       'showFor': ['Pembeli', 'Penitip', 'Hunter', 'Kurir'],
     },
