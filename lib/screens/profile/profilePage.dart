@@ -72,8 +72,7 @@ class ProfilePage extends StatelessWidget {
         elevation: 0,
       ),
       body: SingleChildScrollView(
-        padding:
-            role == 'Pembeli' ? EdgeInsets.zero : const EdgeInsets.all(24.0),
+       
         child: content,
       ),
     );
