@@ -48,6 +48,7 @@ class _HunterProfilePageState extends State<HunterProfilePage> {
     final prefs = await SharedPreferences.getInstance();
     final cached = prefs.getString('cached_hunter');
     if (cached != null) {
+      if (!mounted) return;
       setState(() {
         _pegawai = Pegawai.fromJson(jsonDecode(cached));
         _isLoading = false;
@@ -55,6 +56,7 @@ class _HunterProfilePageState extends State<HunterProfilePage> {
     }
     final fresh = await HunterService.getHunter();
     if (fresh != null) {
+      if (!mounted) return;
       setState(() {
         _pegawai = fresh;
         _isLoading = false;
