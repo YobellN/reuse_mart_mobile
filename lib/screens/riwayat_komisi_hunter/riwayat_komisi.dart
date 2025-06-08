@@ -1,10 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:reuse_mart_mobile/models/produk_hunter.dart';
 import 'package:reuse_mart_mobile/screens/riwayat_komisi_hunter/card_riwayat_komisi.dart';
-import 'package:reuse_mart_mobile/screens/riwayat_transaksi_pembeli/card_riwayat_pembelian.dart'
-    hide ProdukRiwayat;
 import 'package:reuse_mart_mobile/services/hunter_service.dart';
 import 'package:reuse_mart_mobile/utils/app_theme.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class RiwayatKomisiPage extends StatefulWidget {
@@ -50,13 +51,25 @@ class _RiwayatKomisiPageState extends State<RiwayatKomisiPage> {
         }
       }
     });
-    _fetchBarangkHunting();
+    _fetchBarangkHunting(status: _selectedStatus);
   }
 
   Future<void> _fetchBarangkHunting({String? status}) async {
     setState(() {
       _isLoading = true;
     });
+
+    final prefs = await SharedPreferences.getInstance();
+    final cachedProduk = prefs.getString('cached_riwayat_barang_hunting${'_$status'}');
+    if (cachedProduk != null) {
+      final data = json.decode(cachedProduk) as List;
+      setState(() {
+        _listProdukHunting = data.map((item) => ProdukHunter.fromJson(item)).toList();
+        _isLoading = false;
+      });
+      return;
+    }
+
     final data = await HunterService.getRiwayatBarangHunting(status: status);
     setState(() {
       _listProdukHunting = data;
@@ -246,7 +259,7 @@ class _RiwayatKomisiPageState extends State<RiwayatKomisiPage> {
           //  LIST PESANAN
           Expanded(
             child:
-                _isLoading
+                _isLoading 
                     ? ListView.builder(
                       itemCount: 6,
                       itemBuilder: (context, index) => _buildSkeleton(),

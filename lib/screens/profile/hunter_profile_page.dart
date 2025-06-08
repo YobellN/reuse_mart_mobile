@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:reuse_mart_mobile/models/pegawai.dart';
 import 'package:reuse_mart_mobile/screens/riwayat_komisi_hunter/riwayat_komisi.dart';
-import 'package:reuse_mart_mobile/screens/riwayat_transaksi_pembeli/riwayat_pembelian.dart';
 import 'package:reuse_mart_mobile/services/auth_service.dart';
 import 'package:reuse_mart_mobile/services/hunter_service.dart';
 import 'package:reuse_mart_mobile/utils/app_theme.dart';
@@ -11,19 +10,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class HunterProfilePage extends StatefulWidget {
-  // final String name;
-  // final String email;
-  // final String phone;
-  // final String? photoUrl;
-  // final int poin;
+
 
   const HunterProfilePage({
     super.key,
-    // required this.name,
-    // required this.email,
-    // required this.phone,
-    // this.photoUrl,
-    // required this.poin,
   });
 
   @override
@@ -347,66 +337,53 @@ class RiwayatKomisiSection extends StatelessWidget {
           ),
           const SizedBox(height: 24),
 
-          // Row(
-          //   mainAxisAlignment: MainAxisAlignment.spaceAround,
-          //   children: [
-          //     _OrderIcon(
-          //       icon: Icons.payments_outlined,
-          //       label: 'Belum Bayar',
-          //       onTap: () {
-          //         Navigator.push(
-          //           context,
-          //           MaterialPageRoute(
-          //             builder:
-          //                 (_) => RiwayatPembelianPage(
-          //                   initialStatus: 'Belum Dibayar',
-          //                 ),
-          //           ),
-          //         );
-          //       },
-          //     ),
-          //     _OrderIcon(
-          //       icon: Icons.inventory_2_outlined,
-          //       label: 'Disiapkan',
-          //       onTap: () {
-          //         Navigator.push(
-          //           context,
-          //           MaterialPageRoute(
-          //             builder:
-          //                 (_) =>
-          //                     RiwayatPembelianPage(initialStatus: 'Disiapkan'),
-          //           ),
-          //         );
-          //       },
-          //     ),
-          //     _OrderIcon(
-          //       icon: Icons.local_shipping_outlined,
-          //       label: 'Dikirim',
-          //       onTap: () {
-          //         Navigator.push(
-          //           context,
-          //           MaterialPageRoute(
-          //             builder:
-          //                 (_) => RiwayatPembelianPage(initialStatus: 'Dikirim'),
-          //           ),
-          //         );
-          //       },
-          //     ),
-          //     _OrderIcon(
-          //       icon: Icons.inventory_2,
-          //       label: 'Selesai',
-          //       onTap: () {
-          //         Navigator.push(
-          //           context,
-          //           MaterialPageRoute(
-          //             builder:
-          //                 (_) => RiwayatPembelianPage(initialStatus: 'Selesai'),
-          //           ),
-          //         );
-          //       },
-          //     ),
-          //   ],
-          // ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _OrderIcon(
+                icon: Icons.payments_outlined,
+                label: 'Selesai',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (_) => RiwayatKomisiPage(
+                            initialStatus: 'Selesai',
+                          ),
+                    ),
+                  );
+                },
+              ),
+              _OrderIcon(
+                icon: Icons.refresh_outlined,
+                label: 'Menunggu',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (_) =>
+                              RiwayatKomisiPage(initialStatus: 'Menunggu'),
+                    ),
+                  );
+                },
+              ),
+              _OrderIcon(
+                icon: Icons.cancel_outlined,
+                label: 'Batal',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (_) => RiwayatKomisiPage(initialStatus: 'Batal'),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
         ],
       ),
     );
@@ -416,17 +393,26 @@ class RiwayatKomisiSection extends StatelessWidget {
 class _OrderIcon extends StatelessWidget {
   final IconData icon;
   final String label;
+  final VoidCallback onTap;
 
-  const _OrderIcon({required this.icon, required this.label});
+  const _OrderIcon({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Icon(icon, color: AppColors.softPastelGreen, size: 30),
-        const SizedBox(height: 6),
-        Text(label, style: AppTextStyles.caption),
-      ],
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(8),
+      child: Column(
+        children: [
+          Icon(icon, color: AppColors.softPastelGreen, size: 30),
+          const SizedBox(height: 6),
+          Text(label, style: AppTextStyles.caption),
+        ],
+      ),
     );
   }
 }

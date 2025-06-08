@@ -57,6 +57,8 @@ class HunterService {
       if (response.statusCode == 200) {
         final Map<String, dynamic> jsonBody = json.decode(response.body);
         if (jsonBody.containsKey('data')) {
+          final prefs = await SharedPreferences.getInstance();
+          prefs.setString('cached_riwayat_barang_hunting${'_$status'}', json.encode(jsonBody['data']));
           final dataList = jsonBody['data'] as List;
           final data = dataList.map((item) => ProdukHunter.fromJson(item)).toList();
           return data;
