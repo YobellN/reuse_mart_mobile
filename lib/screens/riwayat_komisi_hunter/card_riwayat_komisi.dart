@@ -46,9 +46,6 @@ class RiwayatKomisiCard extends StatelessWidget {
             builder:
                 (context) => DetailKomisiPage(
                   produk: produk,
-                  totalHarga: 2000,
-                  namaPenitip: 'ss',
-                  status: status,
                 ),
           ),
         );
@@ -84,7 +81,7 @@ class RiwayatKomisiCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    penitip.user.nama,
+                    formatTanggal(produk.detailPenitipan.penitipan.tanggalPenitipan),
                     style: TextStyle(
                       fontSize: 14,
                       color: AppColors.textPrimary,
