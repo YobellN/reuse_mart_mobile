@@ -266,7 +266,7 @@ class DetailProdukContent extends StatelessWidget {
             const SizedBox(height: 12),
           ],
 
-          //INFO POIN
+          //INFO PIHAK TERKAIT
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(16),
