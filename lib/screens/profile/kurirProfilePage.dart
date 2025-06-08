@@ -10,15 +10,15 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class KurirProfilePage extends StatefulWidget {
-  final String name;
-  final String email;
-  final String? photoUrl;
+  // final String name;
+  // final String email;
+  // final String? photoUrl;
 
   const KurirProfilePage({
     super.key,
-    required this.name,
-    required this.email,
-    this.photoUrl,
+    // required this.name,
+    // required this.email,
+    // this.photoUrl,
   });
 
   @override
@@ -57,13 +57,6 @@ class _KurirProfilePageState extends State<KurirProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    // Data dummy
-    final String name = "Budi Penitip";
-    final String email = "budi@example.com";
-    final String phone = "081234567890";
-    final int poin = 120;
-    final double saldo = 185000;
-
     return Column(
       children: [
         Stack(
@@ -99,7 +92,7 @@ class _KurirProfilePageState extends State<KurirProfilePage> {
                         child: Column(
                           children: [
                             Text(
-                              _pegawai?.user.nama ?? widget.name,
+                              _pegawai?.user.nama ?? 'Memuat...',
                               style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.w700,
@@ -113,7 +106,7 @@ class _KurirProfilePageState extends State<KurirProfilePage> {
                             ),
                             const SizedBox(height: 2),
                             Text(
-                              _pegawai?.user.email ?? widget.email,
+                              _pegawai?.user.email ?? 'Memuat...',
                               style: AppTextStyles.caption,
                             ),
                             const SizedBox(height: 2),
@@ -130,11 +123,16 @@ class _KurirProfilePageState extends State<KurirProfilePage> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => const RiwayatPengirimanKurirPage(),
+                                      builder:
+                                          (context) =>
+                                              const RiwayatPengirimanKurirPage(),
                                     ),
                                   );
                                 },
-                                icon: Icon(Icons.local_shipping, color: Colors.white),
+                                icon: Icon(
+                                  Icons.local_shipping,
+                                  color: Colors.white,
+                                ),
                                 label: Text(
                                   "Riwayat Pengiriman",
                                   style: TextStyle(
@@ -174,9 +172,7 @@ class _KurirProfilePageState extends State<KurirProfilePage> {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     image: DecorationImage(
-                      image: widget.photoUrl != null
-                          ? NetworkImage(widget.photoUrl!) as ImageProvider
-                          : AssetImage('assets/icons/kurir.webp'),
+                      image: AssetImage('assets/icons/hunter.webp'),
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -198,7 +194,7 @@ class _KurirProfilePageState extends State<KurirProfilePage> {
           child: SizedBox(
             width: double.infinity,
             child: ElevatedButton.icon(
-              onPressed: () => logout(context),
+              onPressed: () => AuthService.logout(context),
               icon: const Icon(Icons.logout, color: Colors.white),
               label: const Text(
                 "Logout",
@@ -254,7 +250,10 @@ class DeliveryStatusSection extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: const [
               _StatusIcon(icon: Icons.pending_outlined, label: 'Menunggu'),
-              _StatusIcon(icon: Icons.local_shipping_outlined, label: 'Diantar'),
+              _StatusIcon(
+                icon: Icons.local_shipping_outlined,
+                label: 'Diantar',
+              ),
               _StatusIcon(icon: Icons.check_circle_outline, label: 'Selesai'),
               _StatusIcon(icon: Icons.cancel_outlined, label: 'Dibatalkan'),
             ],
