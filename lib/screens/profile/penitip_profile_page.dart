@@ -1,9 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:reuse_mart_mobile/utils/app_theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:reuse_mart_mobile/services/penitip_service.dart';
+import 'package:reuse_mart_mobile/models/penitip.dart';
 
-class PenitipProfileContent extends StatelessWidget {
-  PenitipProfileContent({super.key});
+class PenitipProfileContent extends StatefulWidget {
+  const PenitipProfileContent({super.key});
+
+  @override
+  State<PenitipProfileContent> createState() => _PenitipProfileContentState();
+}
+
+class _PenitipProfileContentState extends State<PenitipProfileContent> {
+  Penitip? _penitip;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPenitipProfile();
+  }
 
   final features = [
     {'icon': Icons.share, 'title': 'Affiliate commission', 'isNew': true},
@@ -11,21 +27,40 @@ class PenitipProfileContent extends StatelessWidget {
     {'icon': Icons.card_giftcard, 'title': 'Scratch & Win', 'isNew': true},
   ];
 
+  Future<void> _loadPenitipProfile() async {
+    final fetched = await PenitipService.fetchPenitip();
+    setState(() {
+      _penitip = fetched;
+      _isLoading = false;
+    });
+  }
+
   void logout(BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('token');
     await prefs.remove('role');
+    await prefs.remove('id_penitip');
     Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
   }
 
   @override
   Widget build(BuildContext context) {
-    // Data dummy
-    final String name = "Budi Penitip";
-    final String email = "budi@example.com";
-    final String phone = "081234567890";
-    final int poin = 120;
-    final double saldo = 185000;
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (_penitip == null) {
+      return const Center(child: Text('Gagal memuat data penitip'));
+    }
+
+    final user = _penitip!.user;
+    final raw = _penitip!;
+
+    final name = user.nama;
+    final email = user.email;
+    final phone = user.noTelp;
+    final poin = raw.poin;
+    final saldo = raw.saldo;
 
     return Column(
       children: [
