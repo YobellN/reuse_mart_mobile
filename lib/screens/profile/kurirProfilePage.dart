@@ -57,6 +57,13 @@ class _KurirProfilePageState extends State<KurirProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    // Data dummy
+    final String name = "Budi Penitip";
+    final String email = "budi@example.com";
+    final String phone = "081234567890";
+    final int poin = 120;
+    final double saldo = 185000;
+
     return Column(
       children: [
         Stack(
@@ -187,11 +194,11 @@ class _KurirProfilePageState extends State<KurirProfilePage> {
         //TOMBOL LOGOUT
         Container(
           padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(color: Colors.white),
+          decoration: const BoxDecoration(color: Colors.white),
           child: SizedBox(
             width: double.infinity,
             child: ElevatedButton.icon(
-              onPressed: () => AuthService.logout(context),
+              onPressed: () => logout(context),
               icon: const Icon(Icons.logout, color: Colors.white),
               label: const Text(
                 "Logout",

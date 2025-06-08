@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:reuse_mart_mobile/models/pegawai.dart';
+import 'package:reuse_mart_mobile/screens/riwayat_komisi_hunter/riwayat_komisi.dart';
+import 'package:reuse_mart_mobile/screens/riwayat_transaksi_pembeli/riwayat_pembelian.dart';
 import 'package:reuse_mart_mobile/services/auth_service.dart';
 import 'package:reuse_mart_mobile/services/hunter_service.dart';
 import 'package:reuse_mart_mobile/utils/app_theme.dart';
@@ -9,19 +11,19 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class HunterProfilePage extends StatefulWidget {
-  final String name;
-  final String email;
-  final String phone;
-  final String? photoUrl;
-  final int poin;
+  // final String name;
+  // final String email;
+  // final String phone;
+  // final String? photoUrl;
+  // final int poin;
 
   const HunterProfilePage({
     super.key,
-    required this.name,
-    required this.email,
-    required this.phone,
-    this.photoUrl,
-    required this.poin,
+    // required this.name,
+    // required this.email,
+    // required this.phone,
+    // this.photoUrl,
+    // required this.poin,
   });
 
   @override
@@ -199,7 +201,7 @@ class _HunterProfilePageState extends State<HunterProfilePage> {
         const SizedBox(height: 16),
 
         //  SECTION MENU PROFIL
-        ShoppingOrderSection(),
+        RiwayatKomisiSection(),
         const SizedBox(height: 16),
 
         //  SECTION INFO UMUM
@@ -290,8 +292,8 @@ class _HunterProfilePageState extends State<HunterProfilePage> {
   }
 }
 
-class ShoppingOrderSection extends StatelessWidget {
-  const ShoppingOrderSection({super.key});
+class RiwayatKomisiSection extends StatelessWidget {
+  const RiwayatKomisiSection({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -306,26 +308,105 @@ class ShoppingOrderSection extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                "Shopping order",
+                "Riwayat Hunting",
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w600,
                   color: AppColors.textPrimary,
                 ),
               ),
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const RiwayatKomisiPage(),
+                    ),
+                  );
+                },
+                child: Row(
+                  children: [
+                    Text(
+                      "Lihat semua",
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.softPastelGreen,
+                      ),
+                    ),
+                    const SizedBox(width: 3),
+                    const Icon(
+                      Icons.chevron_right,
+                      size: 20,
+                      color: AppColors.softPastelGreen,
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 24),
 
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: const [
-              _OrderIcon(icon: Icons.payments_outlined, label: 'Waiting'),
-              _OrderIcon(icon: Icons.inventory_2_outlined, label: 'Current'),
-              _OrderIcon(icon: Icons.inventory_2, label: 'Completed'),
-              _OrderIcon(icon: Icons.reviews, label: 'Review'),
-            ],
-          ),
+          // Row(
+          //   mainAxisAlignment: MainAxisAlignment.spaceAround,
+          //   children: [
+          //     _OrderIcon(
+          //       icon: Icons.payments_outlined,
+          //       label: 'Belum Bayar',
+          //       onTap: () {
+          //         Navigator.push(
+          //           context,
+          //           MaterialPageRoute(
+          //             builder:
+          //                 (_) => RiwayatPembelianPage(
+          //                   initialStatus: 'Belum Dibayar',
+          //                 ),
+          //           ),
+          //         );
+          //       },
+          //     ),
+          //     _OrderIcon(
+          //       icon: Icons.inventory_2_outlined,
+          //       label: 'Disiapkan',
+          //       onTap: () {
+          //         Navigator.push(
+          //           context,
+          //           MaterialPageRoute(
+          //             builder:
+          //                 (_) =>
+          //                     RiwayatPembelianPage(initialStatus: 'Disiapkan'),
+          //           ),
+          //         );
+          //       },
+          //     ),
+          //     _OrderIcon(
+          //       icon: Icons.local_shipping_outlined,
+          //       label: 'Dikirim',
+          //       onTap: () {
+          //         Navigator.push(
+          //           context,
+          //           MaterialPageRoute(
+          //             builder:
+          //                 (_) => RiwayatPembelianPage(initialStatus: 'Dikirim'),
+          //           ),
+          //         );
+          //       },
+          //     ),
+          //     _OrderIcon(
+          //       icon: Icons.inventory_2,
+          //       label: 'Selesai',
+          //       onTap: () {
+          //         Navigator.push(
+          //           context,
+          //           MaterialPageRoute(
+          //             builder:
+          //                 (_) => RiwayatPembelianPage(initialStatus: 'Selesai'),
+          //           ),
+          //         );
+          //       },
+          //     ),
+          //   ],
+          // ),
         ],
       ),
     );

@@ -29,7 +29,7 @@ class Penitip {
       fotoKtp: json['foto_ktp'],
       saldo: json['saldo'],
       poin: json['poin'],
-      rating: json['rating'],
+      rating: json['rating'] ?? 0,
       user: User.fromJson(json['user']),
     );
   }

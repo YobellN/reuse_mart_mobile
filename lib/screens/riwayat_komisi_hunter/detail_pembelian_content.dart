@@ -1,13 +1,28 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:reuse_mart_mobile/models/penjualan.dart';
 import 'package:reuse_mart_mobile/screens/riwayat_transaksi_pembeli/card_riwayat_pembelian.dart';
 import 'package:reuse_mart_mobile/utils/app_theme.dart';
 
-class DetailPesananContent extends StatelessWidget {
-final Penjualan penjualan;
+class DetailKomisiContent extends StatelessWidget {
+  final String statusPesanan;
+  final String tanggalPesanan;
+  final String nomorPesanan;
+  final String namaPembeli;
+  final String email;
+  final String noTelepon;
+  final String metodePengiriman;
+  final String alamatPengiriman;
 
-  const DetailPesananContent({super.key, required this.penjualan});
+  const DetailKomisiContent({
+    super.key,
+    required this.statusPesanan,
+    required this.tanggalPesanan,
+    required this.nomorPesanan,
+    required this.namaPembeli,
+    required this.email,
+    required this.noTelepon,
+    required this.metodePengiriman,
+    required this.alamatPengiriman,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +61,7 @@ final Penjualan penjualan;
                     ),
                   ),
                   child: Text(
-                    'Pesanan ${penjualan.statusPenjualan}',
+                    'Pesanan $statusPesanan',
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
@@ -58,32 +73,21 @@ final Penjualan penjualan;
                 _InfoRow(
                   icon: Icons.access_time,
                   label: 'Tanggal Pesanan',
-                  value: DateFormat(
-                    "dd MMMM yyyy",
-                    "id_ID",
-                  ).format(DateTime.parse(penjualan.tanggalPenjualan)),
+                  value: tanggalPesanan,
                 ),
                 _InfoRow(
                   icon: Icons.confirmation_number,
                   label: 'Nomor Pesanan',
-                  value: penjualan.idPenjualan,
+                  value: nomorPesanan,
                 ),
                 _divider(),
                 _InfoRow(
                   icon: Icons.person,
                   label: 'Nama Pembeli',
-                  value: penjualan.namaPembeli ?? '-',
+                  value: namaPembeli,
                 ),
-                _InfoRow(
-                  icon: Icons.email,
-                  label: 'Email',
-                  value: penjualan.emailPembeli ?? '-',
-                ),
-                _InfoRow(
-                  icon: Icons.phone,
-                  label: 'Telepon',
-                  value: penjualan.noTelpPembeli ?? '-',
-                ),
+                _InfoRow(icon: Icons.email, label: 'Email', value: email),
+                _InfoRow(icon: Icons.phone, label: 'Telepon', value: noTelepon),
                 _divider(),
                 Padding(
                   padding: const EdgeInsets.symmetric(
@@ -111,9 +115,7 @@ final Penjualan penjualan;
                           ),
                           const SizedBox(width: 10),
                           Text(
-                            penjualan.metodePengiriman == 'Antar Kurir'
-                                ? 'Kurir: ${penjualan.namaKurir}'
-                                : 'Pengambilan Sendiri',
+                            metodePengiriman,
                             style: const TextStyle(
                               fontSize: 13,
                               color: AppColors.textSecondary,
@@ -133,10 +135,8 @@ final Penjualan penjualan;
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        penjualan.labelAlamat != null
-                            ? 'Alamat Pembeli'
-                            : 'Info Pengambilan ke Gudang',
+                      const Text(
+                        'Alamat Pembeli',
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
@@ -154,37 +154,7 @@ final Penjualan penjualan;
                           const SizedBox(width: 10),
                           Expanded(
                             child: Text(
-                              penjualan.labelAlamat ?? 'Ambil di Gudang pada ',
-                              style: const TextStyle(
-                                fontSize: 13,
-                                color: AppColors.textSecondary,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          const Icon(
-                            Icons.location_on,
-                            size: 20,
-                            color: Colors.white,
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: Text(
-                              penjualan.detailAlamat ??
-                                  (penjualan.jadwalPengambilan != null
-                                      ? DateFormat(
-                                        "dd MMMM yyyy, HH:mm",
-                                        "id_ID",
-                                      ).format(
-                                        DateTime.parse(
-                                          penjualan.jadwalPengambilan!,
-                                        ),
-                                      )
-                                      : '-'),
+                              alamatPengiriman,
                               style: const TextStyle(
                                 fontSize: 13,
                                 color: AppColors.textSecondary,
@@ -204,9 +174,20 @@ final Penjualan penjualan;
           const SizedBox(height: 12),
 
           // LIST PRODUK PESANAN
-          RiwayatPembelianCard(
-            penjualan: penjualan,
-          ),
+          // RiwayatPembelianCard(
+          //   namaPenitip: 'boscollection',
+          //   status: 'Selesai',
+          //   produkList: [
+          //     ProdukRiwayat(
+          //       nama: 'Celana Jogger Panjang Jogger Swe...',
+          //       kategori: 'Pakaian & Aksesori',
+          //       harga: 74869,
+          //       foto: 'assets/icons/reuse-mart-icon.png',
+          //     ),
+          //   ],
+          //   totalJumlah: 1,
+          //   totalHarga: 86025,
+          // ),
 
           //INFO POIN
           Container(
