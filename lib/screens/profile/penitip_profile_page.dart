@@ -1,8 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:reuse_mart_mobile/utils/app_theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:reuse_mart_mobile/services/penitip_service.dart';
 import 'package:reuse_mart_mobile/models/penitip.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class PenitipProfileContent extends StatefulWidget {
   const PenitipProfileContent({super.key});
@@ -28,7 +31,16 @@ class _PenitipProfileContentState extends State<PenitipProfileContent> {
   ];
 
   Future<void> _loadPenitipProfile() async {
+    final prefs = await SharedPreferences.getInstance();
+    final cachedPenitip = prefs.getString('cached_penitip');
+    if (cachedPenitip != null) {
+      setState(() {
+        _penitip = Penitip.fromJson(json.decode(cachedPenitip));
+        _isLoading = false;
+      });
+    }
     final fetched = await PenitipService.fetchPenitip();
+    if (!mounted) return;
     setState(() {
       _penitip = fetched;
       _isLoading = false;
@@ -45,23 +57,6 @@ class _PenitipProfileContentState extends State<PenitipProfileContent> {
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
-    if (_penitip == null) {
-      return const Center(child: Text('Gagal memuat data penitip'));
-    }
-
-    final user = _penitip!.user;
-    final raw = _penitip!;
-
-    final name = user.nama;
-    final email = user.email;
-    final phone = user.noTelp;
-    final poin = raw.poin;
-    final saldo = raw.saldo;
-
     return Column(
       children: [
         Stack(
@@ -70,130 +65,141 @@ class _PenitipProfileContentState extends State<PenitipProfileContent> {
             Container(height: 120, color: AppColors.primary),
             Padding(
               padding: const EdgeInsets.only(top: 30, left: 18, right: 18),
-              child: Column(
-                children: [
-                  Container(
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: const Color.fromARGB(255, 213, 213, 213),
-                        width: 1,
-                      ),
-                      boxShadow: [
-                        BoxShadow(color: Colors.black12, blurRadius: 4),
-                      ],
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.only(
-                        top: 60,
-                        bottom: 24,
-                        left: 16,
-                        right: 16,
-                      ),
-                      child: Column(
-                        children: [
-                          Text(
-                            name,
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.textPrimary,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(phone, style: AppTextStyles.body),
-                          const SizedBox(height: 2),
-                          Text(email, style: AppTextStyles.caption),
-                          const SizedBox(height: 16),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 12,
-                                    horizontal: 12,
-                                  ),
-                                  margin: const EdgeInsets.only(right: 8),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.lightMintGreen,
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        "Poin",
-                                        style: AppTextStyles.bodyBold,
-                                      ),
-                                      const SizedBox(height: 8),
-                                      Row(
-                                        children: [
-                                          const Icon(
-                                            Icons.workspace_premium,
-                                            color: AppColors.softPastelGreen,
-                                          ),
-                                          const SizedBox(width: 8),
-                                          Text(
-                                            poin.toString(),
-                                            style: AppTextStyles.body.copyWith(
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 12,
-                                    horizontal: 12,
-                                  ),
-                                  margin: const EdgeInsets.only(left: 8),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.lightMintGreen,
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        "Saldo",
-                                        style: AppTextStyles.bodyBold,
-                                      ),
-                                      const SizedBox(height: 8),
-                                      Row(
-                                        children: [
-                                          const Icon(
-                                            Icons.account_balance_wallet,
-                                            color: AppColors.softPastelGreen,
-                                          ),
-                                          const SizedBox(width: 8),
-                                          Text(
-                                            'Rp ${saldo.toStringAsFixed(0)}',
-                                            style: AppTextStyles.body.copyWith(
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
+              child: Skeletonizer(
+                enabled: _isLoading,
+                child: Column(
+                  children: [
+                    Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: const Color.fromARGB(255, 213, 213, 213),
+                          width: 1,
+                        ),
+                        boxShadow: [
+                          BoxShadow(color: Colors.black12, blurRadius: 4),
                         ],
                       ),
+                      child: Padding(
+                        padding: const EdgeInsets.only(
+                          top: 60,
+                          bottom: 24,
+                          left: 16,
+                          right: 16,
+                        ),
+                        child: Column(
+                          children: [
+                            Text(
+                              _penitip?.user.nama ?? '',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.textPrimary,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              _penitip?.user.noTelp ?? '',
+                              style: AppTextStyles.body,
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              _penitip?.user.email ?? '',
+                              style: AppTextStyles.caption,
+                            ),
+                            const SizedBox(height: 16),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 12,
+                                      horizontal: 12,
+                                    ),
+                                    margin: const EdgeInsets.only(right: 8),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.lightMintGreen,
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "Poin",
+                                          style: AppTextStyles.bodyBold,
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Row(
+                                          children: [
+                                            const Icon(
+                                              Icons.workspace_premium,
+                                              color: AppColors.softPastelGreen,
+                                            ),
+                                            const SizedBox(width: 8),
+                                            Text(
+                                              _penitip?.poin.toString() ?? '0',
+                                              style: AppTextStyles.body
+                                                  .copyWith(
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 12,
+                                      horizontal: 12,
+                                    ),
+                                    margin: const EdgeInsets.only(left: 8),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.lightMintGreen,
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "Saldo",
+                                          style: AppTextStyles.bodyBold,
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Row(
+                                          children: [
+                                            const Icon(
+                                              Icons.account_balance_wallet,
+                                              color: AppColors.softPastelGreen,
+                                            ),
+                                            const SizedBox(width: 8),
+                                            Text(
+                                              'Rp ${_penitip?.saldo.toStringAsFixed(0) ?? '0'}',
+                                              style: AppTextStyles.body
+                                                  .copyWith(
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
             Positioned(

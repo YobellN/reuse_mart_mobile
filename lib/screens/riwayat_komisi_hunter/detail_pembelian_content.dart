@@ -174,20 +174,20 @@ class DetailKomisiContent extends StatelessWidget {
           const SizedBox(height: 12),
 
           // LIST PRODUK PESANAN
-          RiwayatPembelianCard(
-            namaPenitip: 'boscollection',
-            status: 'Selesai',
-            produkList: [
-              ProdukRiwayat(
-                nama: 'Celana Jogger Panjang Jogger Swe...',
-                kategori: 'Pakaian & Aksesori',
-                harga: 74869,
-                foto: 'assets/icons/reuse-mart-icon.png',
-              ),
-            ],
-            totalJumlah: 1,
-            totalHarga: 86025,
-          ),
+          // RiwayatPembelianCard(
+          //   namaPenitip: 'boscollection',
+          //   status: 'Selesai',
+          //   produkList: [
+          //     ProdukRiwayat(
+          //       nama: 'Celana Jogger Panjang Jogger Swe...',
+          //       kategori: 'Pakaian & Aksesori',
+          //       harga: 74869,
+          //       foto: 'assets/icons/reuse-mart-icon.png',
+          //     ),
+          //   ],
+          //   totalJumlah: 1,
+          //   totalHarga: 86025,
+          // ),
 
           //INFO POIN
           Container(

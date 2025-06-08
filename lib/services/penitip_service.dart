@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:reuse_mart_mobile/models/penitip.dart';
-import 'package:reuse_mart_mobile/models/penitip_profile.dart';
 import 'package:reuse_mart_mobile/utils/api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -28,11 +27,11 @@ class PenitipService {
     }
   }
 
-  static Future<PenitipProfile?> getCachedPenitip() async {
+  static Future<Penitip?> getCachedPenitip() async {
     final prefs = await SharedPreferences.getInstance();
     final cached = prefs.getString(_cacheKey);
     if (cached != null) {
-      return PenitipProfile.fromJson(json.decode(cached));
+      return Penitip.fromJson(json.decode(cached));
     }
     return null;
   }
@@ -45,7 +44,7 @@ class PenitipService {
       if (token == null) return null;
 
       final response = await Api.get(
-        'getUser',
+        'penitip/get-penitip',
         headers: {
           'Authorization': 'Bearer $token',
           'Accept': 'application/json',
@@ -54,20 +53,13 @@ class PenitipService {
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> jsonBody = json.decode(response.body);
-        final Map<String, dynamic> data =
-            jsonBody['data'] as Map<String, dynamic>;
-        print("ISI DATA:");
-        print(data);
-
-        if (!data.containsKey('penitip')) {
-          print("Key 'penitip' tidak ditemukan");
-          return null;
+        if(jsonBody.containsKey('data')) {
+          final Map<String, dynamic> data = jsonBody['data'] as Map<String, dynamic>;
+          final penitip = Penitip.fromJson(data);
+          prefs.setString('cached_penitip', json.encode(data));
+          return penitip;
         }
-        print("DATA================");
-        print(data);
-        final penitip = Penitip.fromJson(data);
-        prefs.setString(_cacheKey, json.encode(data));
-        return penitip;
+        return null;
       }
     } catch (e) {
       print('Error fetching penitip: $e');
