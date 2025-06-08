@@ -19,6 +19,11 @@ class Api {
     return await http.put(url, body: data, headers: headers);
   }
 
+  static Future<http.Response> patch(String endpoint, Map<String, dynamic> data, {Map<String, String>? headers}) async {
+    final url = Uri.parse('$baseUrl/$endpoint');
+    return await http.patch(url, body: data, headers: headers);
+  }
+
   static Future<http.Response> delete(String endpoint, {Map<String, String>? headers}) async {
     final url = Uri.parse('$baseUrl/$endpoint');
     return await http.delete(url, headers: headers);

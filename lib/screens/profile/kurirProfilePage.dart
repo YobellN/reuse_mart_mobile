@@ -1,60 +1,190 @@
-import 'package:flutter/material.dart';
-import 'package:reuse_mart_mobile/services/auth_service.dart';
-import 'package:reuse_mart_mobile/utils/app_theme.dart';
+import 'dart:convert';
 
-class KurirProfilePage extends StatelessWidget {
+import 'package:flutter/material.dart';
+import 'package:reuse_mart_mobile/models/pegawai.dart';
+import 'package:reuse_mart_mobile/screens/riwayat_pengantaran_kurir/riwayat_pengiriman_page.dart';
+import 'package:reuse_mart_mobile/services/auth_service.dart';
+import 'package:reuse_mart_mobile/services/kurir_service.dart';
+import 'package:reuse_mart_mobile/utils/app_theme.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:skeletonizer/skeletonizer.dart';
+
+class KurirProfilePage extends StatefulWidget {
   final String name;
   final String email;
   final String? photoUrl;
 
-  const KurirProfilePage({super.key, required this.name, required this.email, this.photoUrl});
+  const KurirProfilePage({
+    super.key,
+    required this.name,
+    required this.email,
+    this.photoUrl,
+  });
+
+  @override
+  State<KurirProfilePage> createState() => _KurirProfilePageState();
+}
+
+class _KurirProfilePageState extends State<KurirProfilePage> {
+  Pegawai? _pegawai;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    getKurir();
+  }
+
+  Future<void> getKurir() async {
+    final prefs = await SharedPreferences.getInstance();
+    final cached = prefs.getString('cached_kurir');
+    if (cached != null) {
+      if (!mounted) return;
+      setState(() {
+        _pegawai = Pegawai.fromJson(jsonDecode(cached));
+        _isLoading = false;
+      });
+    }
+    final fresh = await KurirService.getKurir();
+    if (fresh != null) {
+      if (!mounted) return;
+      setState(() {
+        _pegawai = fresh;
+        _isLoading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Container(
-          padding: const EdgeInsets.symmetric(vertical: 24),
-          child: Row(
-            children: [
-              CircleAvatar(
-                radius: 40,
-                backgroundImage: photoUrl != null ? NetworkImage(photoUrl!) : null,
-                backgroundColor: AppColors.disabled,
-                child: photoUrl == null ? Icon(Icons.person, size: 40, color: AppColors.textInverse) : null,
-              ),
-              const SizedBox(width: 20),
-              Expanded(
+        Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Container(height: 120, color: AppColors.primary),
+            Padding(
+              padding: const EdgeInsets.only(top: 30, left: 18, right: 18),
+              child: Skeletonizer(
+                enabled: _isLoading,
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(name, style: AppTextStyles.heading2),
-                    const SizedBox(height: 4),
-                    Text(email, style: AppTextStyles.caption),
-                    const SizedBox(height: 8),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                      width: double.infinity,
                       decoration: BoxDecoration(
-                        color: AppColors.primary,
-                        borderRadius: BorderRadius.circular(20),
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: const Color.fromARGB(255, 213, 213, 213),
+                          width: 1,
+                        ),
+                        boxShadow: [
+                          BoxShadow(color: Colors.black12, blurRadius: 4),
+                        ],
                       ),
-                      child: Text('Kurir', style: AppTextStyles.caption.copyWith(color: AppColors.textInverse)),
+                      child: Padding(
+                        padding: const EdgeInsets.only(
+                          top: 60,
+                          bottom: 24,
+                          left: 16,
+                          right: 16,
+                        ),
+                        child: Column(
+                          children: [
+                            Text(
+                              _pegawai?.user.nama ?? widget.name,
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.textPrimary,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              _pegawai?.user.noTelp ?? '',
+                              style: AppTextStyles.body,
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              _pegawai?.user.email ?? widget.email,
+                              style: AppTextStyles.caption,
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              'Tanggal Lahir: ${formatTanggal(_pegawai?.tanggalLahir)}',
+                              style: AppTextStyles.caption,
+                            ),
+                            const SizedBox(height: 16),
+                            // Tombol History Pengiriman
+                            Container(
+                              width: double.infinity,
+                              child: ElevatedButton.icon(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => const RiwayatPengirimanKurirPage(),
+                                    ),
+                                  );
+                                },
+                                icon: Icon(Icons.local_shipping, color: Colors.white),
+                                label: Text(
+                                  "Riwayat Pengiriman",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.primary,
+                                  padding: EdgeInsets.symmetric(vertical: 12),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ],
                 ),
               ),
-            ],
-          ),
+            ),
+            Positioned(
+              top: 0,
+              left: MediaQuery.of(context).size.width / 2 - 40,
+              child: Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white,
+                ),
+                child: Container(
+                  margin: const EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    image: DecorationImage(
+                      image: widget.photoUrl != null
+                          ? NetworkImage(widget.photoUrl!) as ImageProvider
+                          : AssetImage('assets/icons/kurir.webp'),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
-        Card(
-          margin: const EdgeInsets.symmetric(vertical: 12),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          child: ListTile(
-            leading: Icon(Icons.delivery_dining, color: AppColors.primary),
-            title: Text('Akun kurir untuk mengantar pesanan', style: AppTextStyles.bodyBold),
-            subtitle: Text('Antarkan pesanan pelanggan dengan cepat dan aman.', style: AppTextStyles.caption),
-          ),
-        ),
+        const SizedBox(height: 16),
+
+        // Section Info Pengiriman
+        DeliveryStatusSection(),
+        const SizedBox(height: 16),
+
+        //TOMBOL LOGOUT
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(color: Colors.white),
@@ -82,6 +212,65 @@ class KurirProfilePage extends StatelessWidget {
             ),
           ),
         ),
+      ],
+    );
+  }
+}
+
+class DeliveryStatusSection extends StatelessWidget {
+  const DeliveryStatusSection({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(18, 16, 18, 16),
+      decoration: BoxDecoration(color: Colors.white),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "Status Pengiriman",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: const [
+              _StatusIcon(icon: Icons.pending_outlined, label: 'Menunggu'),
+              _StatusIcon(icon: Icons.local_shipping_outlined, label: 'Diantar'),
+              _StatusIcon(icon: Icons.check_circle_outline, label: 'Selesai'),
+              _StatusIcon(icon: Icons.cancel_outlined, label: 'Dibatalkan'),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _StatusIcon extends StatelessWidget {
+  final IconData icon;
+  final String label;
+
+  const _StatusIcon({required this.icon, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Icon(icon, color: AppColors.primary, size: 30),
+        const SizedBox(height: 6),
+        Text(label, style: AppTextStyles.caption),
       ],
     );
   }
