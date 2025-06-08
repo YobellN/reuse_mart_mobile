@@ -228,7 +228,7 @@ final Penjualan penjualan;
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
-                  'Poin',
+                  'Informasi Poin',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
@@ -236,63 +236,65 @@ final Penjualan penjualan;
                   ),
                 ),
                 const SizedBox(height: 12),
-
                 Row(
-                  children: const [
-                    Icon(Icons.card_giftcard, color: Colors.green),
-                    SizedBox(width: 8),
+                  children: [
+                    const Icon(Icons.card_giftcard, color: Colors.green),
+                    const SizedBox(width: 8),
                     Text.rich(
                       TextSpan(
                         children: [
-                          TextSpan(text: 'Poin diperoleh: '),
+                          const TextSpan(text: 'Poin diperoleh: '),
                           TextSpan(
-                            text: '404',
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                            text: '${penjualan.poinPerolehan}',
+                            style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                         ],
                       ),
-                      style: TextStyle(fontSize: 13),
+                      style: const TextStyle(fontSize: 13),
                     ),
                   ],
                 ),
                 const SizedBox(height: 8),
-
                 Row(
-                  children: const [
-                    Icon(Icons.card_giftcard, color: Colors.redAccent),
-                    SizedBox(width: 8),
+                  children: [
+                    const Icon(Icons.card_giftcard, color: Colors.redAccent),
+                    const SizedBox(width: 8),
                     Text.rich(
                       TextSpan(
                         children: [
-                          TextSpan(text: 'Poin digunakan: '),
+                          const TextSpan(text: 'Poin digunakan: '),
                           TextSpan(
-                            text: '100',
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                            text: '${penjualan.poinPotongan}',
+                            style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
-                          TextSpan(text: ' (Diskon Rp1000000)'),
+                          TextSpan(
+                            text:
+                                ' (Diskon Rp${penjualan.poinPotongan * 10000})',
+                          ),
                         ],
                       ),
-                      style: TextStyle(fontSize: 13),
+                      style: const TextStyle(fontSize: 13),
                     ),
                   ],
                 ),
                 const SizedBox(height: 8),
-
                 Row(
-                  children: const [
-                    Icon(Icons.card_giftcard, color: Colors.orange),
-                    SizedBox(width: 8),
+                  children: [
+                    const Icon(Icons.card_giftcard, color: Colors.orange),
+                    const SizedBox(width: 8),
                     Text.rich(
                       TextSpan(
                         children: [
-                          TextSpan(text: 'Total poin setelah transaksi : '),
+                          const TextSpan(
+                            text: 'Total poin setelah transaksi : ',
+                          ),
                           TextSpan(
-                            text: '504',
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                            text: '${penjualan.totalPoin}',
+                            style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                         ],
                       ),
-                      style: TextStyle(fontSize: 13),
+                      style: const TextStyle(fontSize: 13),
                     ),
                   ],
                 ),
@@ -330,11 +332,24 @@ final Penjualan penjualan;
                 ),
                 const SizedBox(height: 12),
 
-                _rowItem('Tanggal Pembayaran', '03 Jun 2025, 14:29'),
-                _rowItem('Metode Pembayaran', 'BCA'),
-                _rowItem('Subtotal', 'Rp3.370.000'),
-                _rowItem('Diskon', '- Rp1.000.000', valueColor: Colors.red),
-                _rowItem('Ongkos Kirim', 'Rp0'),
+                _rowItem(
+                  'Tanggal Pembayaran',
+                  penjualan.tanggalPembayaran ?? '-',
+                ),
+                _rowItem(
+                  'Metode Pembayaran',
+                  penjualan.metodePembayaran ?? '-',
+                ),
+                _rowItem(
+                  'Subtotal',
+                  'Rp${penjualan.detailProduk.fold<int>(0, (sum, item) => sum + item.hargaProduk)}',
+                ),
+                _rowItem(
+                  'Diskon',
+                  'Rp${penjualan.poinPotongan * 10000}',
+                  valueColor: Colors.red,
+                ),
+                _rowItem('Ongkos Kirim', 'Rp${penjualan.totalOngkir}'),
               ],
             ),
           ),
@@ -369,7 +384,7 @@ final Penjualan penjualan;
                   ),
                 ),
                 Text(
-                  'Rp1000000',
+                  penjualan.totalHarga.toString(),
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,

@@ -1,10 +1,12 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:reuse_mart_mobile/models/penitip_detail.dart';
+import 'package:reuse_mart_mobile/screens/riwayat_produk_penitip/riwayat_produk_page.dart';
 import 'package:reuse_mart_mobile/utils/app_theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:reuse_mart_mobile/services/penitip_service.dart';
-import 'package:reuse_mart_mobile/models/penitip.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class PenitipProfileContent extends StatefulWidget {
@@ -15,7 +17,7 @@ class PenitipProfileContent extends StatefulWidget {
 }
 
 class _PenitipProfileContentState extends State<PenitipProfileContent> {
-  Penitip? _penitip;
+  PenitipDetail? _penitip;
   bool _isLoading = true;
 
   @override
@@ -35,7 +37,7 @@ class _PenitipProfileContentState extends State<PenitipProfileContent> {
     final cachedPenitip = prefs.getString('cached_penitip');
     if (cachedPenitip != null) {
       setState(() {
-        _penitip = Penitip.fromJson(json.decode(cachedPenitip));
+        _penitip = PenitipDetail.fromJson(json.decode(cachedPenitip));
         _isLoading = false;
       });
     }
@@ -115,7 +117,7 @@ class _PenitipProfileContentState extends State<PenitipProfileContent> {
                                 Expanded(
                                   child: Container(
                                     padding: const EdgeInsets.symmetric(
-                                      vertical: 12,
+                                      vertical: 8,
                                       horizontal: 12,
                                     ),
                                     margin: const EdgeInsets.only(right: 8),
@@ -131,7 +133,7 @@ class _PenitipProfileContentState extends State<PenitipProfileContent> {
                                           "Poin",
                                           style: AppTextStyles.bodyBold,
                                         ),
-                                        const SizedBox(height: 8),
+                                        const SizedBox(height: 4),
                                         Row(
                                           children: [
                                             const Icon(
@@ -155,13 +157,13 @@ class _PenitipProfileContentState extends State<PenitipProfileContent> {
                                 Expanded(
                                   child: Container(
                                     padding: const EdgeInsets.symmetric(
-                                      vertical: 12,
+                                      vertical: 8,
                                       horizontal: 12,
                                     ),
                                     margin: const EdgeInsets.only(left: 8),
                                     decoration: BoxDecoration(
                                       color: AppColors.lightMintGreen,
-                                      borderRadius: BorderRadius.circular(12),
+                                      borderRadius: BorderRadius.circular(8),
                                     ),
                                     child: Column(
                                       crossAxisAlignment:
@@ -171,7 +173,7 @@ class _PenitipProfileContentState extends State<PenitipProfileContent> {
                                           "Saldo",
                                           style: AppTextStyles.bodyBold,
                                         ),
-                                        const SizedBox(height: 8),
+                                        const SizedBox(height: 4),
                                         Row(
                                           children: [
                                             const Icon(
@@ -180,7 +182,99 @@ class _PenitipProfileContentState extends State<PenitipProfileContent> {
                                             ),
                                             const SizedBox(width: 8),
                                             Text(
-                                              'Rp ${_penitip?.saldo.toStringAsFixed(0) ?? '0'}',
+                                              NumberFormat.currency(
+                                                locale: 'id_ID',
+                                                symbol: 'Rp ',
+                                                decimalDigits: 0,
+                                              ).format(_penitip?.saldo ?? 0),
+                                              style: AppTextStyles.body
+                                                  .copyWith(
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 8,
+                                      horizontal: 12,
+                                    ),
+                                    margin: const EdgeInsets.only(right: 8),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.lightMintGreen,
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "Rating",
+                                          style: AppTextStyles.bodyBold,
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Row(
+                                          children: [
+                                            const Icon(
+                                              Icons.star,
+                                              color: AppColors.softPastelGreen,
+                                            ),
+                                            const SizedBox(width: 8),
+                                            Text(
+                                              _penitip?.rating.toString() ??
+                                                  'Belum ada',
+                                              style: AppTextStyles.body
+                                                  .copyWith(
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 8,
+                                      horizontal: 12,
+                                    ),
+                                    margin: const EdgeInsets.only(left: 8),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.lightMintGreen,
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "Total Produk",
+                                          style: AppTextStyles.bodyBold,
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Row(
+                                          children: [
+                                            const Icon(
+                                              Icons.inventory_2_outlined,
+                                              color: AppColors.softPastelGreen,
+                                            ),
+                                            const SizedBox(width: 8),
+                                            Text(
+                                              _penitip?.totalProduk
+                                                      .toString() ??
+                                                  'Belum ada',
                                               style: AppTextStyles.body
                                                   .copyWith(
                                                     fontWeight: FontWeight.bold,
@@ -229,7 +323,7 @@ class _PenitipProfileContentState extends State<PenitipProfileContent> {
         const SizedBox(height: 16),
 
         // SECTION MENU PROFIL
-        const PesananSayaSection(),
+        if (_penitip != null) ProdukSayaSection(idPenitip: _penitip!.idPenitip),
         const SizedBox(height: 16),
 
         // SECTION INFO UMUM
@@ -301,40 +395,135 @@ class _PenitipProfileContentState extends State<PenitipProfileContent> {
   }
 }
 
-class PesananSayaSection extends StatelessWidget {
-  const PesananSayaSection({super.key});
+class ProdukSayaSection extends StatelessWidget {
+  final String idPenitip;
+  const ProdukSayaSection({super.key, required this.idPenitip});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(18, 16, 18, 16),
-      decoration: BoxDecoration(color: Colors.white),
+      decoration: const BoxDecoration(color: Colors.white),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Header
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                "Shopping order",
+                "Produk Saya",
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w600,
                   color: AppColors.textPrimary,
                 ),
               ),
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (_) => RiwayatProdukPage(
+                            idPenitip: idPenitip,
+                            initialStatus: 'Semua',
+                          ),
+                    ),
+                  );
+                },
+                child: Row(
+                  children: [
+                    Text(
+                      "Lihat semua riwayat",
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.softPastelGreen,
+                      ),
+                    ),
+                    const SizedBox(width: 3),
+                    const Icon(
+                      Icons.chevron_right,
+                      size: 20,
+                      color: AppColors.softPastelGreen,
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 24),
 
+          // Shortcut icons
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: const [
-              _OrderIcon(icon: Icons.payments_outlined, label: 'Waiting'),
-              _OrderIcon(icon: Icons.inventory_2_outlined, label: 'Current'),
-              _OrderIcon(icon: Icons.inventory_2, label: 'Completed'),
-              _OrderIcon(icon: Icons.reviews, label: 'Review'),
+            children: [
+              _OrderIcon(
+                icon: Icons.check_circle,
+                label: 'Tersedia',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (_) => RiwayatProdukPage(
+                            idPenitip: idPenitip,
+                            initialStatus: 'Tersedia',
+                          ),
+                    ),
+                  );
+                },
+              ),
+              _OrderIcon(
+                icon: Icons.highlight_off,
+                label: 'Tidak Laku',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (_) => RiwayatProdukPage(
+                            idPenitip: idPenitip,
+                            initialStatus: 'Tidak Laku',
+                          ),
+                    ),
+                  );
+                },
+              ),
+              _OrderIcon(
+                icon: Icons.volunteer_activism,
+                label: 'Didonasikan',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (_) => RiwayatProdukPage(
+                            idPenitip: idPenitip,
+                            initialStatus: 'Didonasikan',
+                          ),
+                    ),
+                  );
+                },
+              ),
+              _OrderIcon(
+                icon: Icons.inventory,
+                label: 'Terjual',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (_) => RiwayatProdukPage(
+                            idPenitip: idPenitip,
+                            initialStatus: 'Terjual',
+                          ),
+                    ),
+                  );
+                },
+              ),
             ],
           ),
         ],
@@ -346,17 +535,26 @@ class PesananSayaSection extends StatelessWidget {
 class _OrderIcon extends StatelessWidget {
   final IconData icon;
   final String label;
+  final VoidCallback onTap;
 
-  const _OrderIcon({required this.icon, required this.label});
+  const _OrderIcon({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Icon(icon, color: AppColors.softPastelGreen, size: 30),
-        const SizedBox(height: 6),
-        Text(label, style: AppTextStyles.caption),
-      ],
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        children: [
+          Icon(icon, color: AppColors.softPastelGreen, size: 30),
+          const SizedBox(height: 6),
+          Text(label, style: AppTextStyles.caption),
+        ],
+      ),
     );
   }
 }
+

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:reuse_mart_mobile/models/produk_titipan.dart';
 import 'package:reuse_mart_mobile/utils/api.dart';
 import 'package:reuse_mart_mobile/models/produk.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -57,4 +58,36 @@ class ProductService {
       return [];
     }
   }
+
+
+  static Future<List<ProdukTitipan>> fetchProdukTitipanPenitip({
+    String? statusProduk,
+  }) async {
+    try {
+      final response = await Api.getWithAuth(
+        'penitip/penitipan/produk-titipan',
+        params: statusProduk != null ? {'status_produk': statusProduk} : null,
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> jsonBody = json.decode(response.body);
+
+        if (jsonBody.containsKey('data') && jsonBody['data'] is List) {
+          return (jsonBody['data'] as List)
+              .map((item) => ProdukTitipan.fromJson(item))
+              .toList();
+        } else {
+          throw Exception('Invalid JSON structure: ${jsonBody.toString()}');
+        }
+      } else {
+        throw Exception(
+          'Failed to load produk titipan: ${response.statusCode}',
+        );
+      }
+    } catch (e) {
+      print(e);
+      return [];
+    }
+  }
+
 }
