@@ -4,10 +4,19 @@ class Api {
   static const String baseUrl = 'http://10.0.2.2:8000/api'; 
   static const String storageUrl = 'http://10.0.2.2:8000/storage/';
 
-  static Future<http.Response> get(String endpoint, {Map<String, String>? headers}) async {
-    final url = Uri.parse('$baseUrl/$endpoint');
-    return await http.get(url, headers: headers);
+  static Future<http.Response> get(
+    String endpoint, {
+    Map<String, String>? headers,
+    Map<String, dynamic>? params,
+  }) async {
+    final uri = Uri.parse('$baseUrl/$endpoint').replace(
+      queryParameters: params?.map(
+        (key, value) => MapEntry(key, value.toString()),
+      ),
+    );
+    return await http.get(uri, headers: headers);
   }
+
 
   static Future<http.Response> post(String endpoint, Map<String, dynamic> data, {Map<String, String>? headers}) async {
     final url = Uri.parse('$baseUrl/$endpoint');

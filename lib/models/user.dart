@@ -15,11 +15,11 @@ class User {
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-      nama: json['nama'],
-      email: json['email'],
-      noTelp: json['no_telp'],
-      role: json['role'],
-      fcmToken: json['fcm_token'],
+      nama: json['nama'] ?? '',
+      email: json['email'] ?? '',
+      noTelp: json['no_telp'] ?? '',
+      role: json['role'] ?? '',
+      fcmToken: json['fcm_token'] as String?, 
     );
   }
 }

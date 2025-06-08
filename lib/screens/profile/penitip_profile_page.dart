@@ -1,24 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:reuse_mart_mobile/utils/app_theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:reuse_mart_mobile/services/penitip_service.dart';
+import 'package:reuse_mart_mobile/models/penitip.dart';
 
-class PenitipProfileContent extends StatelessWidget {
-  final String name;
-  final String email;
-  final String phone;
-  final String? photoUrl;
-  final int poin;
-  final double saldo;
+class PenitipProfileContent extends StatefulWidget {
+  const PenitipProfileContent({super.key});
 
-  PenitipProfileContent({
-    super.key,
-    required this.name,
-    required this.email,
-    required this.phone,
-    this.photoUrl,
-    required this.poin,
-    required this.saldo,
-  });
+  @override
+  State<PenitipProfileContent> createState() => _PenitipProfileContentState();
+}
+
+class _PenitipProfileContentState extends State<PenitipProfileContent> {
+  Penitip? _penitip;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPenitipProfile();
+  }
 
   final features = [
     {'icon': Icons.share, 'title': 'Affiliate commission', 'isNew': true},
@@ -26,15 +27,41 @@ class PenitipProfileContent extends StatelessWidget {
     {'icon': Icons.card_giftcard, 'title': 'Scratch & Win', 'isNew': true},
   ];
 
+  Future<void> _loadPenitipProfile() async {
+    final fetched = await PenitipService.fetchPenitip();
+    setState(() {
+      _penitip = fetched;
+      _isLoading = false;
+    });
+  }
+
   void logout(BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('token');
     await prefs.remove('role');
+    await prefs.remove('id_penitip');
     Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (_penitip == null) {
+      return const Center(child: Text('Gagal memuat data penitip'));
+    }
+
+    final user = _penitip!.user;
+    final raw = _penitip!;
+
+    final name = user.nama;
+    final email = user.email;
+    final phone = user.noTelp;
+    final poin = raw.poin;
+    final saldo = raw.saldo;
+
     return Column(
       children: [
         Stack(
@@ -195,14 +222,14 @@ class PenitipProfileContent extends StatelessWidget {
         ),
         const SizedBox(height: 16),
 
-        //  SECTION MENU PROFIL
-        PesananSayaSection(),
+        // SECTION MENU PROFIL
+        const PesananSayaSection(),
         const SizedBox(height: 16),
 
-        //  SECTION INFO UMUM
+        // SECTION INFO UMUM
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
-          decoration: BoxDecoration(color: Colors.white),
+          decoration: const BoxDecoration(color: Colors.white),
           child: Column(
             children:
                 features.map((feature) {
@@ -219,26 +246,6 @@ class PenitipProfileContent extends StatelessWidget {
                               feature['title'] as String,
                               style: AppTextStyles.body,
                             ),
-                            const SizedBox(width: 8),
-                            // if (feature['isNew'] == true)
-                            //   Container(
-                            //     padding: const EdgeInsets.symmetric(
-                            //       horizontal: 8,
-                            //       vertical: 2,
-                            //     ),
-                            //     decoration: BoxDecoration(
-                            //       color: Colors.red,
-                            //       borderRadius: BorderRadius.circular(8),
-                            //     ),
-                            //     child: const Text(
-                            //       'New',
-                            //       style: TextStyle(
-                            //         fontSize: 10,
-                            //         color: Colors.white,
-                            //         fontWeight: FontWeight.bold,
-                            //       ),
-                            //     ),
-                            //   ),
                           ],
                         ),
                         trailing: const Icon(Icons.chevron_right),
@@ -254,10 +261,11 @@ class PenitipProfileContent extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 16),
-        //TOMBOL LOGOUT
+
+        // TOMBOL LOGOUT
         Container(
           padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(color: Colors.white),
+          decoration: const BoxDecoration(color: Colors.white),
           child: SizedBox(
             width: double.infinity,
             child: ElevatedButton.icon(

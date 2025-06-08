@@ -11,19 +11,19 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class HunterProfilePage extends StatefulWidget {
-  final String name;
-  final String email;
-  final String phone;
-  final String? photoUrl;
-  final int poin;
+  // final String name;
+  // final String email;
+  // final String phone;
+  // final String? photoUrl;
+  // final int poin;
 
   const HunterProfilePage({
     super.key,
-    required this.name,
-    required this.email,
-    required this.phone,
-    this.photoUrl,
-    required this.poin,
+    // required this.name,
+    // required this.email,
+    // required this.phone,
+    // this.photoUrl,
+    // required this.poin,
   });
 
   @override

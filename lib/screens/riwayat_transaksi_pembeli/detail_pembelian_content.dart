@@ -1,28 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:reuse_mart_mobile/models/penjualan.dart';
 import 'package:reuse_mart_mobile/screens/riwayat_transaksi_pembeli/card_riwayat_pembelian.dart';
 import 'package:reuse_mart_mobile/utils/app_theme.dart';
 
 class DetailPesananContent extends StatelessWidget {
-  final String statusPesanan;
-  final String tanggalPesanan;
-  final String nomorPesanan;
-  final String namaPembeli;
-  final String email;
-  final String noTelepon;
-  final String metodePengiriman;
-  final String alamatPengiriman;
+final Penjualan penjualan;
 
-  const DetailPesananContent({
-    super.key,
-    required this.statusPesanan,
-    required this.tanggalPesanan,
-    required this.nomorPesanan,
-    required this.namaPembeli,
-    required this.email,
-    required this.noTelepon,
-    required this.metodePengiriman,
-    required this.alamatPengiriman,
-  });
+  const DetailPesananContent({super.key, required this.penjualan});
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +46,7 @@ class DetailPesananContent extends StatelessWidget {
                     ),
                   ),
                   child: Text(
-                    'Pesanan $statusPesanan',
+                    'Pesanan ${penjualan.statusPenjualan}',
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
@@ -73,21 +58,32 @@ class DetailPesananContent extends StatelessWidget {
                 _InfoRow(
                   icon: Icons.access_time,
                   label: 'Tanggal Pesanan',
-                  value: tanggalPesanan,
+                  value: DateFormat(
+                    "dd MMMM yyyy",
+                    "id_ID",
+                  ).format(DateTime.parse(penjualan.tanggalPenjualan)),
                 ),
                 _InfoRow(
                   icon: Icons.confirmation_number,
                   label: 'Nomor Pesanan',
-                  value: nomorPesanan,
+                  value: penjualan.idPenjualan,
                 ),
                 _divider(),
                 _InfoRow(
                   icon: Icons.person,
                   label: 'Nama Pembeli',
-                  value: namaPembeli,
+                  value: penjualan.namaPembeli ?? '-',
                 ),
-                _InfoRow(icon: Icons.email, label: 'Email', value: email),
-                _InfoRow(icon: Icons.phone, label: 'Telepon', value: noTelepon),
+                _InfoRow(
+                  icon: Icons.email,
+                  label: 'Email',
+                  value: penjualan.emailPembeli ?? '-',
+                ),
+                _InfoRow(
+                  icon: Icons.phone,
+                  label: 'Telepon',
+                  value: penjualan.noTelpPembeli ?? '-',
+                ),
                 _divider(),
                 Padding(
                   padding: const EdgeInsets.symmetric(
@@ -115,7 +111,9 @@ class DetailPesananContent extends StatelessWidget {
                           ),
                           const SizedBox(width: 10),
                           Text(
-                            metodePengiriman,
+                            penjualan.metodePengiriman == 'Antar Kurir'
+                                ? 'Kurir: ${penjualan.namaKurir}'
+                                : 'Pengambilan Sendiri',
                             style: const TextStyle(
                               fontSize: 13,
                               color: AppColors.textSecondary,
@@ -135,8 +133,10 @@ class DetailPesananContent extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Alamat Pembeli',
+                      Text(
+                        penjualan.labelAlamat != null
+                            ? 'Alamat Pembeli'
+                            : 'Info Pengambilan ke Gudang',
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
@@ -154,7 +154,37 @@ class DetailPesananContent extends StatelessWidget {
                           const SizedBox(width: 10),
                           Expanded(
                             child: Text(
-                              alamatPengiriman,
+                              penjualan.labelAlamat ?? 'Ambil di Gudang pada ',
+                              style: const TextStyle(
+                                fontSize: 13,
+                                color: AppColors.textSecondary,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.location_on,
+                            size: 20,
+                            color: Colors.white,
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              penjualan.detailAlamat ??
+                                  (penjualan.jadwalPengambilan != null
+                                      ? DateFormat(
+                                        "dd MMMM yyyy, HH:mm",
+                                        "id_ID",
+                                      ).format(
+                                        DateTime.parse(
+                                          penjualan.jadwalPengambilan!,
+                                        ),
+                                      )
+                                      : '-'),
                               style: const TextStyle(
                                 fontSize: 13,
                                 color: AppColors.textSecondary,
@@ -175,18 +205,7 @@ class DetailPesananContent extends StatelessWidget {
 
           // LIST PRODUK PESANAN
           RiwayatPembelianCard(
-            namaPenitip: 'boscollection',
-            status: 'Selesai',
-            produkList: [
-              ProdukRiwayat(
-                nama: 'Celana Jogger Panjang Jogger Swe...',
-                kategori: 'Pakaian & Aksesori',
-                harga: 74869,
-                foto: 'assets/icons/reuse-mart-icon.png',
-              ),
-            ],
-            totalJumlah: 1,
-            totalHarga: 86025,
+            penjualan: penjualan,
           ),
 
           //INFO POIN
