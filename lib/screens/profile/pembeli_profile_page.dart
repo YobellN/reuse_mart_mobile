@@ -1,29 +1,60 @@
 import 'package:flutter/material.dart';
+import 'package:reuse_mart_mobile/models/pembeli.dart';
 import 'package:reuse_mart_mobile/screens/riwayat_transaksi_pembeli/riwayat_pembelian.dart';
+import 'package:reuse_mart_mobile/services/pembeli_service.dart';
 import 'package:reuse_mart_mobile/utils/app_theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
-class PembeliProfileContent extends StatelessWidget {
-  final String name;
-  final String email;
-  final String phone;
-  final String? photoUrl;
-  final int poin;
+class PembeliProfileContent extends StatefulWidget {
+  const PembeliProfileContent({super.key});
 
-  PembeliProfileContent({
-    super.key,
-    required this.name,
-    required this.email,
-    required this.phone,
-    this.photoUrl,
-    required this.poin,
-  });
+  @override
+  State<PembeliProfileContent> createState() => _PembeliProfileContentState();
+}
 
-  final features = [
-    {'icon': Icons.share, 'title': 'Affiliate commission', 'isNew': true},
-    {'icon': Icons.pan_tool_alt, 'title': 'Referral', 'isNew': true},
-    {'icon': Icons.card_giftcard, 'title': 'Scratch & Win', 'isNew': true},
-  ];
+class _PembeliProfileContentState extends State<PembeliProfileContent> {
+  Pembeli? _pembeli;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    loadCachedDataThenFetchFresh();
+  }
+
+  Future<void> loadCachedDataThenFetchFresh() async {
+    final cached = await PembeliService.getCachedPembeli();
+    if (cached != null && mounted) {
+      setState(() {
+        _pembeli = cached;
+        _isLoading = false;
+      });
+    }
+
+    final fresh = await PembeliService.getPembeli();
+    if (fresh != null && mounted) {
+      setState(() {
+        _pembeli = fresh;
+      });
+    }
+  }
+
+  Future<void> fetchProfile() async {
+    if (_pembeli != null) return;
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    final response = await PembeliService.getPembeli();
+
+    if (!mounted) return;
+    setState(() {
+      _pembeli = response;
+      _isLoading = false;
+    });
+  }
 
   void logout(BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
@@ -32,8 +63,19 @@ class PembeliProfileContent extends StatelessWidget {
     Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
   }
 
+  final features = [
+    {'icon': Icons.share, 'title': 'Affiliate commission', 'isNew': true},
+    {'icon': Icons.pan_tool_alt, 'title': 'Referral', 'isNew': true},
+    {'icon': Icons.card_giftcard, 'title': 'Scratch & Win', 'isNew': true},
+  ];
+
   @override
   Widget build(BuildContext context) {
+    final name = _pembeli?.user.nama ?? 'John Doe';
+    final email = _pembeli?.user.email ?? 'example@email.com';
+    final phone = _pembeli?.user.noTelp ?? '+628123456789';
+    final poin = _pembeli?.pembeli.poin ?? 0;
+
     return Column(
       children: [
         Stack(
@@ -42,88 +84,91 @@ class PembeliProfileContent extends StatelessWidget {
             Container(height: 120, color: AppColors.primary),
             Padding(
               padding: const EdgeInsets.only(top: 30, left: 18, right: 18),
-              child: Column(
-                children: [
-                  Container(
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: const Color.fromARGB(255, 213, 213, 213),
-                        width: 1,
-                      ),
-                      boxShadow: [
-                        BoxShadow(color: Colors.black12, blurRadius: 4),
-                      ],
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.only(
-                        top: 60,
-                        bottom: 24,
-                        left: 16,
-                        right: 16,
-                      ),
-                      child: Column(
-                        children: [
-                          Text(
-                            name,
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.textPrimary,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(phone, style: AppTextStyles.body),
-                          const SizedBox(height: 2),
-                          Text(email, style: AppTextStyles.caption),
-                          const SizedBox(height: 16),
-                          Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 12,
-                              horizontal: 12,
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppColors.lightMintGreen,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "Poin",
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w700,
-                                    color: AppColors.textPrimary,
-                                  ),
-                                ),
-                                const SizedBox(height: 8),
-                                Row(
-                                  children: [
-                                    const Icon(
-                                      Icons.workspace_premium,
-                                      color: AppColors.softPastelGreen,
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Text(
-                                      poin.toString(),
-                                      style: AppTextStyles.body.copyWith(
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
+              child: Skeletonizer(
+                enabled: _isLoading,
+                child: Column(
+                  children: [
+                    Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: const Color.fromARGB(255, 213, 213, 213),
+                          width: 1,
+                        ),
+                        boxShadow: [
+                          BoxShadow(color: Colors.black12, blurRadius: 4),
                         ],
                       ),
+                      child: Padding(
+                        padding: const EdgeInsets.only(
+                          top: 60,
+                          bottom: 24,
+                          left: 16,
+                          right: 16,
+                        ),
+                        child: Column(
+                          children: [
+                            Text(
+                              name,
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.textPrimary,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(phone, style: AppTextStyles.body),
+                            const SizedBox(height: 2),
+                            Text(email, style: AppTextStyles.caption),
+                            const SizedBox(height: 16),
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 12,
+                                horizontal: 12,
+                              ),
+                              decoration: BoxDecoration(
+                                color: AppColors.lightMintGreen,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Poin",
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w700,
+                                      color: AppColors.textPrimary,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.workspace_premium,
+                                        color: AppColors.softPastelGreen,
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        poin.toString(),
+                                        style: AppTextStyles.body.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
             Positioned(
@@ -151,12 +196,8 @@ class PembeliProfileContent extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 16),
-
-        //  SECTION MENU PROFIL
-        PesananSayaSection(),
+        const PesananSayaSection(),
         const SizedBox(height: 16),
-
-        //  SECTION INFO UMUM
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
           decoration: BoxDecoration(color: Colors.white),
@@ -177,31 +218,10 @@ class PembeliProfileContent extends StatelessWidget {
                               style: AppTextStyles.body,
                             ),
                             const SizedBox(width: 8),
-                            // if (feature['isNew'] == true)
-                            //   Container(
-                            //     padding: const EdgeInsets.symmetric(
-                            //       horizontal: 8,
-                            //       vertical: 2,
-                            //     ),
-                            //     decoration: BoxDecoration(
-                            //       color: Colors.red,
-                            //       borderRadius: BorderRadius.circular(8),
-                            //     ),
-                            //     child: const Text(
-                            //       'New',
-                            //       style: TextStyle(
-                            //         fontSize: 10,
-                            //         color: Colors.white,
-                            //         fontWeight: FontWeight.bold,
-                            //       ),
-                            //     ),
-                            //   ),
                           ],
                         ),
                         trailing: const Icon(Icons.chevron_right),
-                        onTap: () {
-                          // TODO: Add navigation
-                        },
+                        onTap: () {},
                       ),
                       if (feature != features.last)
                         Divider(height: 1, color: Colors.grey.shade300),
@@ -211,7 +231,6 @@ class PembeliProfileContent extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 16),
-        //TOMBOL LOGOUT
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(color: Colors.white),
@@ -239,11 +258,13 @@ class PembeliProfileContent extends StatelessWidget {
             ),
           ),
         ),
-       
       ],
     );
   }
 }
+
+// PesananSayaSection dan _OrderIcon tetap seperti sebelumnya
+
 
 class PesananSayaSection extends StatelessWidget {
   const PesananSayaSection({super.key});
@@ -299,7 +320,6 @@ class PesananSayaSection extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 24),
-
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
@@ -360,7 +380,6 @@ class PesananSayaSection extends StatelessWidget {
               ),
             ],
           ),
-
         ],
       ),
     );
@@ -393,4 +412,3 @@ class _OrderIcon extends StatelessWidget {
     );
   }
 }
-

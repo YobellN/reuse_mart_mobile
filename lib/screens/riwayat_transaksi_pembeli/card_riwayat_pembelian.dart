@@ -1,22 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:reuse_mart_mobile/models/penjualan.dart';
 import 'package:reuse_mart_mobile/screens/riwayat_transaksi_pembeli/detail_pembelian_page.dart';
+import 'package:reuse_mart_mobile/utils/api.dart';
 import 'package:reuse_mart_mobile/utils/app_theme.dart';
 import 'package:intl/intl.dart';
 
 class RiwayatPembelianCard extends StatelessWidget {
-  final String namaPenitip;
-  final String status;
-  final List<ProdukRiwayat> produkList;
-  final int totalJumlah;
-  final int totalHarga;
+  final Penjualan penjualan;
 
   RiwayatPembelianCard({
     super.key,
-    required this.namaPenitip,
-    required this.status,
-    required this.produkList,
-    required this.totalJumlah,
-    required this.totalHarga,
+    required this.penjualan
   });
 
   final currencyFormatter = NumberFormat.currency(
@@ -33,12 +27,7 @@ class RiwayatPembelianCard extends StatelessWidget {
           context,
           MaterialPageRoute(
             builder:
-                (context) => DetailPesananPage(
-                  produkList: produkList,
-                  totalHarga: totalHarga,
-                  namaPenitip: namaPenitip,
-                  status: status,
-                ),
+                (context) => DetailPembelianPage(penjualan: penjualan),
           ),
         );
       },
@@ -74,7 +63,10 @@ class RiwayatPembelianCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    namaPenitip,
+                    DateFormat(
+                      "dd MMMM yyyy",
+                      "id_ID",
+                    ).format(DateTime.parse(penjualan.tanggalPenjualan)),
                     style: TextStyle(
                       fontSize: 14,
                       color: AppColors.textPrimary,
@@ -82,7 +74,7 @@ class RiwayatPembelianCard extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    status,
+                    penjualan.statusPenjualan,
                     style: TextStyle(
                       fontSize: 14,
                       color: AppColors.primary,
@@ -96,7 +88,7 @@ class RiwayatPembelianCard extends StatelessWidget {
 
             Column(
               children:
-                  produkList.map((produk) {
+                  penjualan.detailProduk.map((produk) {
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 8),
                       child: Row(
@@ -112,14 +104,47 @@ class RiwayatPembelianCard extends StatelessWidget {
                             ),
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(8),
-                              child: Image.asset(
-                                produk.foto ??
-                                    'assets/icons/reuse-mart-icon.png',
-                                width: 85,
-                                height: 85,
-                                fit: BoxFit.cover,
-                              ),
+                              child:
+                                  produk.fotoProduk.isNotEmpty
+                                      ? Image.network(
+                                        '${Api.storageUrl}foto_produk/${produk.fotoProduk.first.pathFoto}',
+                                        width: 85,
+                                        height: 85,
+                                        fit: BoxFit.cover,
+                                        loadingBuilder: (
+                                          context,
+                                          child,
+                                          loadingProgress,
+                                        ) {
+                                          if (loadingProgress == null)
+                                            return child;
+                                          return Image.asset(
+                                            'assets/icons/reuse-mart-icon.png',
+                                            width: 85,
+                                            height: 85,
+                                            fit: BoxFit.cover,
+                                          );
+                                        },
+                                        errorBuilder:
+                                            (
+                                              context,
+                                              error,
+                                              stackTrace,
+                                            ) => Image.asset(
+                                              'assets/icons/reuse-mart-icon.png',
+                                              width: 85,
+                                              height: 85,
+                                              fit: BoxFit.cover,
+                                            ),
+                                      )
+                                      : Image.asset(
+                                        'assets/icons/reuse-mart-icon.png',
+                                        width: 85,
+                                        height: 85,
+                                        fit: BoxFit.cover,
+                                      ),
                             ),
+
                           ),
                           const SizedBox(width: 12),
                           Expanded(
@@ -135,7 +160,7 @@ class RiwayatPembelianCard extends StatelessWidget {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        produk.nama,
+                                        produk.namaProduk,
                                         style: TextStyle(
                                           fontSize: 14,
                                           color: AppColors.textPrimary,
@@ -146,7 +171,7 @@ class RiwayatPembelianCard extends StatelessWidget {
                                       ),
                                       const SizedBox(height: 2),
                                       Text(
-                                        produk.kategori,
+                                        produk.kategori.namaKategori,
                                         style: TextStyle(
                                           fontSize: 12,
                                           color: AppColors.textSecondary,
@@ -159,7 +184,9 @@ class RiwayatPembelianCard extends StatelessWidget {
                                   SizedBox(
                                     width: double.infinity,
                                     child: Text(
-                                      currencyFormatter.format(produk.harga),
+                                      currencyFormatter.format(
+                                        produk.hargaProduk,
+                                      ),
                                       textAlign: TextAlign.right,
                                       style: TextStyle(
                                         fontSize: 14,
@@ -190,7 +217,7 @@ class RiwayatPembelianCard extends StatelessWidget {
                 TextSpan(
                   children: [
                     TextSpan(
-                      text: 'Total $totalJumlah produk: ',
+                      text: 'Total ${penjualan.detailProduk.length} produk: ',
                       style: TextStyle(
                         fontSize: 14,
                         color: AppColors.textPrimary,
@@ -198,7 +225,7 @@ class RiwayatPembelianCard extends StatelessWidget {
                       ),
                     ),
                     TextSpan(
-                      text: currencyFormatter.format(totalHarga),
+                      text: currencyFormatter.format(penjualan.totalHarga),
                       style: TextStyle(
                         fontSize: 14,
                         color: AppColors.darkPastelGreen,

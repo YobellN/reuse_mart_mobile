@@ -3,22 +3,7 @@ import 'package:reuse_mart_mobile/utils/app_theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PenitipProfileContent extends StatelessWidget {
-  final String name;
-  final String email;
-  final String phone;
-  final String? photoUrl;
-  final int poin;
-  final double saldo;
-
-  PenitipProfileContent({
-    super.key,
-    required this.name,
-    required this.email,
-    required this.phone,
-    this.photoUrl,
-    required this.poin,
-    required this.saldo,
-  });
+  PenitipProfileContent({super.key});
 
   final features = [
     {'icon': Icons.share, 'title': 'Affiliate commission', 'isNew': true},
@@ -35,6 +20,13 @@ class PenitipProfileContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Data dummy
+    final String name = "Budi Penitip";
+    final String email = "budi@example.com";
+    final String phone = "081234567890";
+    final int poin = 120;
+    final double saldo = 185000;
+
     return Column(
       children: [
         Stack(
@@ -195,14 +187,14 @@ class PenitipProfileContent extends StatelessWidget {
         ),
         const SizedBox(height: 16),
 
-        //  SECTION MENU PROFIL
-        PesananSayaSection(),
+        // SECTION MENU PROFIL
+        const PesananSayaSection(),
         const SizedBox(height: 16),
 
-        //  SECTION INFO UMUM
+        // SECTION INFO UMUM
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
-          decoration: BoxDecoration(color: Colors.white),
+          decoration: const BoxDecoration(color: Colors.white),
           child: Column(
             children:
                 features.map((feature) {
@@ -219,26 +211,6 @@ class PenitipProfileContent extends StatelessWidget {
                               feature['title'] as String,
                               style: AppTextStyles.body,
                             ),
-                            const SizedBox(width: 8),
-                            // if (feature['isNew'] == true)
-                            //   Container(
-                            //     padding: const EdgeInsets.symmetric(
-                            //       horizontal: 8,
-                            //       vertical: 2,
-                            //     ),
-                            //     decoration: BoxDecoration(
-                            //       color: Colors.red,
-                            //       borderRadius: BorderRadius.circular(8),
-                            //     ),
-                            //     child: const Text(
-                            //       'New',
-                            //       style: TextStyle(
-                            //         fontSize: 10,
-                            //         color: Colors.white,
-                            //         fontWeight: FontWeight.bold,
-                            //       ),
-                            //     ),
-                            //   ),
                           ],
                         ),
                         trailing: const Icon(Icons.chevron_right),
@@ -254,10 +226,11 @@ class PenitipProfileContent extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 16),
-        //TOMBOL LOGOUT
+
+        // TOMBOL LOGOUT
         Container(
           padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(color: Colors.white),
+          decoration: const BoxDecoration(color: Colors.white),
           child: SizedBox(
             width: double.infinity,
             child: ElevatedButton.icon(

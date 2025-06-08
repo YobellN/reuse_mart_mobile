@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:reuse_mart_mobile/models/penjualan.dart';
+import 'package:reuse_mart_mobile/services/penjualan_service.dart';
 import 'package:reuse_mart_mobile/screens/riwayat_transaksi_pembeli/card_riwayat_pembelian.dart';
 import 'package:reuse_mart_mobile/utils/app_theme.dart';
 
@@ -22,13 +24,15 @@ class _RiwayatPembelianPageState extends State<RiwayatPembelianPage> {
   ];
 
   final ScrollController _statusScrollController = ScrollController();
-
   late String _selectedStatus;
+  bool _isLoading = true;
+  List<Penjualan> _penjualanList = [];
 
   @override
   void initState() {
     super.initState();
     _selectedStatus = widget.initialStatus;
+    _fetchPenjualan();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final index = _statusList.indexOf(_selectedStatus);
@@ -47,9 +51,44 @@ class _RiwayatPembelianPageState extends State<RiwayatPembelianPage> {
     });
   }
 
+  String? mapStatusToApi(String status) {
+    switch (status) {
+      case 'Belum Dibayar':
+        return 'Menunggu Pembayaran';
+      case 'Menunggu konfirmasi':
+        return 'Diproses';
+      case 'Disiapkan':
+        return 'Disiapkan';
+      case 'Menunggu Pengambilan':
+        return 'Menunggu Pengambilan';
+      case 'Dikirim':
+        return 'Dikirim';
+      case 'Selesai':
+        return 'Selesai';
+      case 'Hangus':
+        return 'Hangus';
+      default:
+        return null;
+    }
+  }
+
+
   void _onStatusSelected(String status) {
     setState(() {
       _selectedStatus = status;
+     
+    });
+    _fetchPenjualan();
+  }
+
+  Future<void> _fetchPenjualan() async {
+    setState(() => _isLoading = true);
+    // final statusQuery = _selectedStatus == 'Semua' ? null : _selectedStatus;
+    final statusApi = mapStatusToApi(_selectedStatus);
+    final data = await PenjualanService.getPenjualanPembeli(status: statusApi);
+    setState(() {
+      _penjualanList = data;
+      _isLoading = false;
     });
   }
 
@@ -60,7 +99,6 @@ class _RiwayatPembelianPageState extends State<RiwayatPembelianPage> {
       appBar: AppBar(
         title: const Text('Pesanan Saya', style: AppTextStyles.appBarText),
       ),
-      //BAGIAN FILTER STATUS TRANSAKSI
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -111,28 +149,22 @@ class _RiwayatPembelianPageState extends State<RiwayatPembelianPage> {
           ),
           const SizedBox(height: 12),
 
-          //  LIST PESANAN
           Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              itemCount: 10,
-              itemBuilder: (context, index) {
-                return RiwayatPembelianCard(
-                  namaPenitip: 'boscollection',
-                  status: 'Selesai',
-                  produkList: [
-                    ProdukRiwayat(
-                      nama: 'Celana Jogger Panjang Jogger Swe...',
-                      kategori: 'Pakaian & Aksesori',
-                      harga: 74869,
-                      foto: 'assets/icons/reuse-mart-icon.png',
+            child:
+                _isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : _penjualanList.isEmpty
+                    ? const Center(
+                      child: Text("Kamu belum memiliki riwayat transaksi"),
+                    )
+                    : ListView.builder(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      itemCount: _penjualanList.length,
+                      itemBuilder: (context, index) {
+                        final trx = _penjualanList[index];
+                        return RiwayatPembelianCard(penjualan: trx);
+                      },
                     ),
-                  ],
-                  totalJumlah: 1,
-                  totalHarga: 86025,
-                );
-              },
-            ),
           ),
         ],
       ),

@@ -1,20 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:reuse_mart_mobile/screens/riwayat_transaksi_pembeli/card_riwayat_pembelian.dart';
+import 'package:reuse_mart_mobile/models/penjualan.dart';
 import 'package:reuse_mart_mobile/screens/riwayat_transaksi_pembeli/detail_pembelian_content.dart';
 import 'package:reuse_mart_mobile/utils/app_theme.dart';
 
-class DetailPesananPage extends StatelessWidget {
-  final List<ProdukRiwayat> produkList;
-  final int totalHarga;
-  final String namaPenitip;
-  final String status;
+class DetailPembelianPage extends StatelessWidget {
+  final Penjualan penjualan;
 
-  const DetailPesananPage({
+  const DetailPembelianPage({
     super.key,
-    required this.produkList,
-    required this.totalHarga,
-    required this.namaPenitip,
-    required this.status,
+    required this.penjualan,
   });
 
   @override
@@ -28,20 +22,7 @@ class DetailPesananPage extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: DetailPesananContent(
-        statusPesanan: status,
-        tanggalPesanan: '07-06-2025',
-        nomorPesanan: 'INV20250607001',
-        namaPembeli: 'Budi Santoso',
-        email: 'budi@example.com',
-        noTelepon: '081234567890',
-        metodePengiriman: 'Kurir Internal',
-        alamatPengiriman: 'Jl. Melati No.123, Sleman, Yogyakarta 55281',
-
-        // produkList: produkList,
-        // totalHarga: totalHarga,
-        // namaPenitip: namaPenitip,
-      ),
+      body: DetailPesananContent(penjualan: penjualan),
     );
   }
 }

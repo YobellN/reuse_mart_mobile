@@ -7,71 +7,29 @@ import 'package:reuse_mart_mobile/utils/app_theme.dart';
 
 class ProfilePage extends StatelessWidget {
   final String role;
-  final String name;
-  final String email;
-  final String? photoUrl;
-  final int? komisi;
-  final int? poin;
-  final double? saldo;
-  final String? nomorTelpon;
-  final List<Map<String, dynamic>>? komisiHistory;
 
-  const ProfilePage({
-    super.key,
-    required this.role,
-    required this.name,
-    required this.email,
-    this.photoUrl,
-    this.komisi,
-    this.komisiHistory,
-    this.poin,
-    this.saldo,
-    this.nomorTelpon,
-  });
+  const ProfilePage({super.key, required this.role});
 
   @override
   Widget build(BuildContext context) {
-
     Widget content;
     switch (role) {
       case 'Hunter':
-        content = HunterProfilePage(
-          name: name,
-          email: email,
-          photoUrl: photoUrl,
-          phone: nomorTelpon ?? '',
-          poin: poin ?? 0,
-        );
+        content = const HunterProfilePage();
         break;
       case 'Kurir':
-        content = KurirProfilePage(
-          name: name,
-          email: email,
-          photoUrl: photoUrl,
-        );
+        content = KurirProfilePage(); 
         break;
       case 'Pembeli':
-        content = PembeliProfileContent(
-          name: name,
-          email: email,
-          photoUrl: photoUrl,
-          phone: nomorTelpon ?? '',
-          poin: poin ?? 0,
-        );
+        content = PembeliProfileContent(); 
         break;
       case 'Penitip':
-        content = PenitipProfileContent(
-          name: name,
-          email: email,
-          photoUrl: photoUrl,
-          phone: nomorTelpon ?? '',
-          poin: poin ?? 0,
-          saldo: saldo ?? 0,
-        );
+        content = PenitipProfileContent(); 
         break;
       default:
-        content = const SizedBox.shrink();
+        content = const Center(child: Text('Role tidak dikenali'));
     }
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
