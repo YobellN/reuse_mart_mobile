@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:reuse_mart_mobile/models/produk_hunter.dart';
+import 'package:reuse_mart_mobile/screens/catalogue/skeleton_image.dart';
 import 'package:reuse_mart_mobile/screens/riwayat_komisi_hunter/detail_komisi_page.dart';
 import 'package:reuse_mart_mobile/utils/api.dart';
 import 'package:reuse_mart_mobile/utils/app_theme.dart';
@@ -43,10 +44,7 @@ class RiwayatKomisiCard extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder:
-                (context) => DetailKomisiPage(
-                  produk: produk,
-                ),
+            builder: (context) => DetailKomisiPage(produk: produk),
           ),
         );
       },
@@ -81,7 +79,9 @@ class RiwayatKomisiCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    formatTanggal(produk.detailPenitipan.penitipan.tanggalPenitipan),
+                    formatTanggal(
+                      produk.detailPenitipan.penitipan.tanggalPenitipan,
+                    ),
                     style: TextStyle(
                       fontSize: 14,
                       color: AppColors.textPrimary,
@@ -123,32 +123,41 @@ class RiwayatKomisiCard extends StatelessWidget {
                         ),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(8),
-                          child: Image.network(
-                            fotoProduk,
-                            height: 85,
+                          child: SkeletonImage(
+                            imageUrl:
+                                fotoProduk,
                             width: 85,
-                            fit: BoxFit.cover,
-                            loadingBuilder: (context, child, loadingProgress) {
-                              if (loadingProgress == null) return child;
-                              return Image(
-                                image: const AssetImage(
-                                  'assets/icons/reuse-mart-icon.png',
-                                ),
-                                height: 85,
-                                width: 85,
-                                fit: BoxFit.cover,
-                              );
-                            },
-                            errorBuilder:
-                                (context, error, stackTrace) => Image(
-                                  image: const AssetImage(
-                                    'assets/icons/reuse-mart-icon.png',
-                                  ),
-                                  height: 85,
-                                  width: 85,
-                                  fit: BoxFit.cover,
-                                ),
+                            height: 85,
+                            borderRadius: const BorderRadius.vertical(
+                              top: Radius.circular(14),
+                            ),
                           ),
+                          // Image.network(
+                          //   fotoProduk,
+                          //   height: 85,
+                          //   width: 85,
+                          //   fit: BoxFit.cover,
+                          //   loadingBuilder: (context, child, loadingProgress) {
+                          //     if (loadingProgress == null) return child;
+                          //     return Image(
+                          //       image: const AssetImage(
+                          //         'assets/icons/reuse-mart-icon.png',
+                          //       ),
+                          //       height: 85,
+                          //       width: 85,
+                          //       fit: BoxFit.cover,
+                          //     );
+                          //   },
+                          //   errorBuilder:
+                          //       (context, error, stackTrace) => Image(
+                          //         image: const AssetImage(
+                          //           'assets/icons/reuse-mart-icon.png',
+                          //         ),
+                          //         height: 85,
+                          //         width: 85,
+                          //         fit: BoxFit.cover,
+                          //       ),
+                          // ),
                         ),
                       ),
                       const SizedBox(width: 12),

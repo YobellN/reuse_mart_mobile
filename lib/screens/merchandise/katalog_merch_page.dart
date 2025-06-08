@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:reuse_mart_mobile/models/merchandise.dart';
+import 'package:reuse_mart_mobile/screens/catalogue/skeleton_image.dart';
 import 'package:reuse_mart_mobile/services/merch_service.dart';
 import 'package:reuse_mart_mobile/utils/api.dart';
 import 'package:reuse_mart_mobile/utils/app_theme.dart';
@@ -78,7 +79,6 @@ class _KatalogMerchPageState extends State<KatalogMerchPage> {
         _filteredMerch = freshMerch;
         _isLoading = false;
       });
-      
     } catch (e) {
       if (!mounted) return;
       setState(() {
@@ -127,33 +127,14 @@ class _KatalogMerchPageState extends State<KatalogMerchPage> {
               borderRadius: const BorderRadius.vertical(
                 top: Radius.circular(14),
               ),
-              child: Image.network(
-                '${Api.storageUrl}foto_merchandise/${merchandise.fotoMerchandise}',
-                height: 140,
+              child: SkeletonImage(
+                imageUrl:
+                    '${Api.storageUrl}foto_merchandise/${merchandise.fotoMerchandise}',
                 width: double.infinity,
-                fit: BoxFit.cover,
-                loadingBuilder: (context, child, loadingProgress) {
-                  if (loadingProgress == null) return child;
-                  return Container(
-                    height: 120,
-                    color: AppColors.surface,
-                    child: const Center(
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    ),
-                  );
-                },
-                errorBuilder:
-                    (context, error, stackTrace) => Container(
-                      height: 120,
-                      color: AppColors.disabled,
-                      child: const Center(
-                        child: Icon(
-                          Icons.broken_image,
-                          color: Colors.white54,
-                          size: 40,
-                        ),
-                      ),
-                    ),
+                height: 140,
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(14),
+                ),
               ),
             ),
             Padding(
@@ -424,7 +405,9 @@ class _KatalogMerchPageState extends State<KatalogMerchPage> {
                         children: [
                           SizedBox(
                             height: 300,
-                            child: Center(child: Text('Tidak ada merchandise.')),
+                            child: Center(
+                              child: Text('Tidak ada merchandise.'),
+                            ),
                           ),
                         ],
                       );
