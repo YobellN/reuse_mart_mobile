@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:reuse_mart_mobile/screens/riwayat_komisi_hunter/card_riwayat_komisi.dart';
+import 'package:reuse_mart_mobile/models/produk_hunter.dart';
 import 'package:reuse_mart_mobile/screens/riwayat_komisi_hunter/detail_pembelian_content.dart';
 import 'package:reuse_mart_mobile/utils/app_theme.dart';
 
 class DetailKomisiPage extends StatelessWidget {
-  final List<ProdukRiwayat> produkList;
+  final ProdukHunter produk;
   final int totalHarga;
   final String namaPenitip;
   final String status;
 
   const DetailKomisiPage({
     super.key,
-    required this.produkList,
+    required this.produk,
     required this.totalHarga,
     required this.namaPenitip,
     required this.status,

@@ -14,7 +14,7 @@ class Api {
         (key, value) => MapEntry(key, value.toString()),
       ),
     );
-    return await http.get(uri, headers: headers);
+    return await http.get(uri, headers: headers).timeout(Duration(seconds: 30));
   }
 
 

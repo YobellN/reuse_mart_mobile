@@ -1,23 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:reuse_mart_mobile/models/produk_hunter.dart';
 import 'package:reuse_mart_mobile/screens/riwayat_komisi_hunter/detail_komisi_page.dart';
+import 'package:reuse_mart_mobile/utils/api.dart';
 import 'package:reuse_mart_mobile/utils/app_theme.dart';
 
 class RiwayatKomisiCard extends StatelessWidget {
-  final String namaPenitip;
-  final String status;
-  final List<ProdukRiwayat> produkList;
-  final int totalJumlah;
-  final int totalHarga;
+  final ProdukHunter produk;
 
-  RiwayatKomisiCard({
-    super.key,
-    required this.namaPenitip,
-    required this.status,
-    required this.produkList,
-    required this.totalJumlah,
-    required this.totalHarga,
-  });
+  RiwayatKomisiCard({super.key, required this.produk});
 
   final currencyFormatter = NumberFormat.currency(
     locale: 'id_ID',
@@ -27,6 +18,26 @@ class RiwayatKomisiCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final pathFoto =
+        produk.fotoProduk
+            .where((element) => element.thumbnail == 1)
+            .first
+            .pathFoto;
+    final fotoProduk = '${Api.storageUrl}foto_produk/$pathFoto';
+    final penitip = produk.detailPenitipan.penitipan.penitip;
+    final String status;
+
+    if (produk.statusAkhirProduk == 'Diambil' ||
+        produk.statusAkhirProduk == 'Akan Diambil') {
+      status = 'Batal';
+    } else if ((produk.statusAkhirProduk == 'Terjual' ||
+            produk.statusAkhirProduk == 'Produk untuk donasi' ||
+            produk.statusAkhirProduk == 'Didonasikan') &&
+        produk.detailPenjualan?.komisi != null) {
+      status = 'Selesai';
+    } else {
+      status = 'Menunggu';
+    }
     return InkWell(
       onTap: () {
         Navigator.push(
@@ -34,9 +45,9 @@ class RiwayatKomisiCard extends StatelessWidget {
           MaterialPageRoute(
             builder:
                 (context) => DetailKomisiPage(
-                  produkList: produkList,
-                  totalHarga: totalHarga,
-                  namaPenitip: namaPenitip,
+                  produk: produk,
+                  totalHarga: 2000,
+                  namaPenitip: 'ss',
                   status: status,
                 ),
           ),
@@ -60,7 +71,6 @@ class RiwayatKomisiCard extends StatelessWidget {
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-
           children: [
             Container(
               padding: const EdgeInsets.only(bottom: 8),
@@ -74,7 +84,7 @@ class RiwayatKomisiCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    namaPenitip,
+                    penitip.user.nama,
                     style: TextStyle(
                       fontSize: 14,
                       color: AppColors.textPrimary,
@@ -85,7 +95,12 @@ class RiwayatKomisiCard extends StatelessWidget {
                     status,
                     style: TextStyle(
                       fontSize: 14,
-                      color: AppColors.primary,
+                      color:
+                          status == 'Batal'
+                              ? AppColors.error
+                              : status == 'Menunggu'
+                              ? AppColors.info
+                              : AppColors.primary,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -95,87 +110,103 @@ class RiwayatKomisiCard extends StatelessWidget {
             const SizedBox(height: 2),
 
             Column(
-              children:
-                  produkList.map((produk) {
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 8),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: AppColors.border,
-                                width: 0.5,
-                              ),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child: Image.asset(
-                                produk.foto ??
-                                    'assets/icons/reuse-mart-icon.png',
-                                width: 85,
-                                height: 85,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: AppColors.border,
+                            width: 0.5,
                           ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: SizedBox(
-                              height: 85,
-                              child: Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.network(
+                            fotoProduk,
+                            height: 85,
+                            width: 85,
+                            fit: BoxFit.cover,
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return Image(
+                                image: const AssetImage(
+                                  'assets/icons/reuse-mart-icon.png',
+                                ),
+                                height: 85,
+                                width: 85,
+                                fit: BoxFit.cover,
+                              );
+                            },
+                            errorBuilder:
+                                (context, error, stackTrace) => Image(
+                                  image: const AssetImage(
+                                    'assets/icons/reuse-mart-icon.png',
+                                  ),
+                                  height: 85,
+                                  width: 85,
+                                  fit: BoxFit.cover,
+                                ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: SizedBox(
+                          height: 85,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        produk.nama,
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          color: AppColors.textPrimary,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                      const SizedBox(height: 2),
-                                      Text(
-                                        produk.kategori,
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          color: AppColors.textSecondary,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ],
+                                  Text(
+                                    produk.namaProduk,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: AppColors.textPrimary,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
-
-                                  SizedBox(
-                                    width: double.infinity,
-                                    child: Text(
-                                      currencyFormatter.format(produk.harga),
-                                      textAlign: TextAlign.right,
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        color: AppColors.textPrimary,
-                                        fontWeight: FontWeight.w500,
-                                      ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    produk.kategori.namaKategori,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: AppColors.textSecondary,
+                                      fontWeight: FontWeight.w500,
                                     ),
                                   ),
                                 ],
                               ),
-                            ),
+
+                              SizedBox(
+                                width: double.infinity,
+                                child: Text(
+                                  currencyFormatter.format(produk.hargaProduk),
+                                  textAlign: TextAlign.right,
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: AppColors.textPrimary,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
+                        ),
                       ),
-                    );
-                  }).toList(),
+                    ],
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 12),
             Container(
@@ -190,7 +221,7 @@ class RiwayatKomisiCard extends StatelessWidget {
                 TextSpan(
                   children: [
                     TextSpan(
-                      text: 'Total $totalJumlah produk: ',
+                      text: 'Komisi: ',
                       style: TextStyle(
                         fontSize: 14,
                         color: AppColors.textPrimary,
@@ -198,7 +229,12 @@ class RiwayatKomisiCard extends StatelessWidget {
                       ),
                     ),
                     TextSpan(
-                      text: currencyFormatter.format(totalHarga),
+                      text:
+                          produk.detailPenjualan?.komisi?.komisiHunter != null
+                              ? currencyFormatter.format(
+                                produk.detailPenjualan?.komisi?.komisiHunter,
+                              )
+                              : 'Belum ada komisi',
                       style: TextStyle(
                         fontSize: 14,
                         color: AppColors.darkPastelGreen,
@@ -218,15 +254,7 @@ class RiwayatKomisiCard extends StatelessWidget {
 }
 
 class ProdukRiwayat {
-  final String nama;
-  final String kategori;
-  final int harga;
-  final String? foto;
+  final ProdukHunter produk;
 
-  ProdukRiwayat({
-    required this.nama,
-    required this.kategori,
-    required this.harga,
-    this.foto,
-  });
+  ProdukRiwayat({required this.produk});
 }
