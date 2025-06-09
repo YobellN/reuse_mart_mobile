@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:reuse_mart_mobile/services/globals.dart';
@@ -20,8 +21,13 @@ class AuthService {
 
   static void logout(BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('token');
-    await prefs.remove('role');
+    final fcmToken = await FirebaseMessaging.instance.getToken();
+    await prefs.clear();
+
+    if (fcmToken != null) {
+      await prefs.setString('fcmToken', fcmToken);
+    }
+
     // ignore: use_build_context_synchronously
     Navigator.pushNamedAndRemoveUntil(context, '/onboarding', (route) => false);
   }

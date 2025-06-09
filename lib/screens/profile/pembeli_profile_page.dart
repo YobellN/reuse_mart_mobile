@@ -36,6 +36,7 @@ class _PembeliProfileContentState extends State<PembeliProfileContent> {
     if (fresh != null && mounted) {
       setState(() {
         _pembeli = fresh;
+        _isLoading = false;
       });
     }
   }

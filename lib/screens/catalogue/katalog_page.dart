@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:reuse_mart_mobile/models/produk.dart';
 import 'package:reuse_mart_mobile/screens/catalogue/detail_produk_page.dart';
@@ -7,7 +6,6 @@ import 'package:reuse_mart_mobile/screens/catalogue/skeleton_image.dart';
 import 'package:reuse_mart_mobile/services/product_service.dart';
 import 'package:reuse_mart_mobile/utils/api.dart';
 import 'package:reuse_mart_mobile/utils/app_theme.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class KatalogPage extends StatefulWidget {
@@ -86,20 +84,20 @@ class _KatalogPageState extends State<KatalogPage> {
       _currentPage = 1;
     });
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final products = prefs.getString('cached_produk');
-      if (products != null) {
-        if (!mounted) return;
-        setState(() {
-          _allProducts =
-              (json.decode(products) as List)
-                  .map((e) => Produk.fromJson(e))
-                  .toList();
-          _hasMore = _allProducts.length == 6;
-          _isLoadingMore = false;
-        });
-        return;
-      }
+      // final prefs = await SharedPreferences.getInstance();
+      // final products = prefs.getString('cached_produk');
+      // if (products != null) {
+      //   if (!mounted) return;
+      //   setState(() {
+      //     _allProducts =
+      //         (json.decode(products) as List)
+      //             .map((e) => Produk.fromJson(e))
+      //             .toList();
+      //     _hasMore = _allProducts.length == 6;
+      //     _isLoadingMore = false;
+      //   });
+      //   return;
+      // }
 
       final kategoriParam =
           _selectedCategory != 'Semua'

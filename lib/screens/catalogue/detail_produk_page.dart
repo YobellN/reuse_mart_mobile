@@ -24,7 +24,7 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
   List<Produk> _produkLain = [];
   bool _isLoadingProdukLain = false;
 
-  Penitip? penitip;
+  Penitip? _penitip;
   bool _isLoadingPenitip = true;
 
   @override
@@ -62,11 +62,14 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
       _isLoadingPenitip = true;
     });
     try {
-      penitip = await PenitipService.fetchPenitipById(
+      final fetched = await PenitipService.fetchPenitipById(
         widget.product.detailPenitipan.penitipan.penitip.idPenitip,
       );
+      setState(() {
+        _penitip = fetched;
+      });
     } catch (e) {
-      penitip = null;
+      // penitip = null;
     }
     if (!mounted) return;
     setState(() {
@@ -823,8 +826,8 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
               const SizedBox(height: 16),
               if (_isLoadingPenitip)
                 _buildPenitipSkeleton()
-              else if (penitip != null)
-                _buildPenitipInfo(penitip!)
+              else if (_penitip != null && !_isLoadingPenitip)
+                _buildPenitipInfo(_penitip!)
               else
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: 16),

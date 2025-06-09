@@ -8,7 +8,7 @@ class Penitip {
   final int saldo;
   final int poin;
   final User user;
-  final int? rating;
+  final double? rating;
 
   Penitip({
     required this.idPenitip,
@@ -29,7 +29,7 @@ class Penitip {
       fotoKtp: json['foto_ktp'],
       saldo: json['saldo'],
       poin: json['poin'],
-      rating: json['rating'] ?? 0,
+      rating: json['rating'] != null ? (json['rating'] as num).toDouble() : null,
       user: User.fromJson(json['user']),
     );
   }

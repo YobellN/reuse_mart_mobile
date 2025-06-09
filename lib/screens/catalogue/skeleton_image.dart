@@ -32,7 +32,7 @@ class _SkeletonImageState extends State<SkeletonImage> {
           widget.imageUrl,
           width: widget.width,
           height: widget.height,
-          fit: BoxFit.cover,
+          fit: BoxFit.contain,
           frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
             if (frame != null && !_isLoaded) {
               WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -54,7 +54,7 @@ class _SkeletonImageState extends State<SkeletonImage> {
                 'assets/images/reuse-mart.png',
                 height: widget.height,
                 width: widget.width,
-                fit: BoxFit.cover,
+                fit: BoxFit.contain,
               ),
             );
           },
