@@ -5,6 +5,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:reuse_mart_mobile/utils/app_theme.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:reuse_mart_mobile/models/top_seller.dart';
+import 'package:reuse_mart_mobile/services/top_seller_service.dart';
+import 'package:intl/intl.dart';
 
 
 class InformasiPage extends StatefulWidget {
@@ -17,6 +20,36 @@ class InformasiPage extends StatefulWidget {
 
 class _InformasiPageState extends State<InformasiPage> {
   int _current = 0;
+
+  TopSeller? topSeller;
+  bool isLoadingTopSeller = true;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchTopSellerData();
+  }
+
+  Future<void> fetchTopSellerData() async {
+    List<TopSeller> cached = await TopSellerService.getCachedTopSellers();
+
+    if (cached.isNotEmpty) {
+      setState(() {
+        topSeller = cached.first;
+        isLoadingTopSeller = false;
+      });
+    }
+
+    List<TopSeller> fresh = await TopSellerService.fetchTopSellers();
+
+    if (fresh.isNotEmpty &&
+        fresh.first.idTopSeller != cached.first.idTopSeller) {
+      setState(() {
+        topSeller = fresh.first;
+      });
+    }
+  }
+
 
   final List<CarouselData> carouselData = const [
     CarouselData(
@@ -100,9 +133,11 @@ class _InformasiPageState extends State<InformasiPage> {
     final lastMonth = DateTime(now.year, now.month - 1);
     final bulanLalu = DateFormat('MMMM', 'id_ID').format(lastMonth);
 
-    final sellerName = "Toko Amanah";
-    final rating = 4.8;
-    final jumlahTerjual = 125;
+    final sellerName = topSeller?.penitip.user.nama ?? 'Tidak ada top seller';
+    final rating = topSeller?.avgRating ?? 0.0;
+    final jumlahTerjual = topSeller?.totalProduk ?? 0;
+    final pendapatan = topSeller?.totalPenjualan ?? 0;
+   
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 18.0),
@@ -181,7 +216,22 @@ class _InformasiPageState extends State<InformasiPage> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 6),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.attach_money,
+                            size: 16,
+                            color: Colors.green,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            "Penjualan $bulanLalu ${NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0).format(pendapatan)}",
+                            style: const TextStyle(fontSize: 14),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
                       Row(
                         children: [
                           const Icon(
