@@ -124,8 +124,10 @@ class _KurirProfilePageState extends State<KurirProfilePage> {
                                     context,
                                     MaterialPageRoute(
                                       builder:
-                                          (context) =>
-                                              const RiwayatPengirimanKurirPage(),
+                                          (_) =>
+                                              const RiwayatPengirimanKurirPage(
+                                                initialStatus: 'Semua',
+                                              ),
                                     ),
                                   );
                                 },
@@ -248,14 +250,67 @@ class DeliveryStatusSection extends StatelessWidget {
           const SizedBox(height: 24),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: const [
-              _StatusIcon(icon: Icons.pending_outlined, label: 'Menunggu'),
+            children: [
+              _StatusIcon(
+                icon: Icons.pending_outlined,
+                label: 'Menunggu Kurir',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (_) => const RiwayatPengirimanKurirPage(
+                            initialStatus: 'Menunggu Kurir',
+                          ),
+                    ),
+                  );
+                },
+              ),
               _StatusIcon(
                 icon: Icons.local_shipping_outlined,
-                label: 'Diantar',
+                label: 'Diambil oleh kurir',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (_) => const RiwayatPengirimanKurirPage(
+                            initialStatus: 'Diambil oleh kurir',
+                          ),
+                    ),
+                  );
+                },
               ),
-              _StatusIcon(icon: Icons.check_circle_outline, label: 'Selesai'),
-              _StatusIcon(icon: Icons.cancel_outlined, label: 'Dibatalkan'),
+              _StatusIcon(
+                icon: Icons.check_circle_outline,
+                label: 'Selesai',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (_) => const RiwayatPengirimanKurirPage(
+                            initialStatus: 'Selesai',
+                          ),
+                    ),
+                  );
+                },
+              ),
+              _StatusIcon(
+                icon: Icons.cancel_outlined,
+                label: 'Dibatalkan',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (_) => const RiwayatPengirimanKurirPage(
+                            initialStatus: 'Dibatalkan',
+                          ),
+                    ),
+                  );
+                },
+              ),
             ],
           ),
         ],
@@ -267,17 +322,26 @@ class DeliveryStatusSection extends StatelessWidget {
 class _StatusIcon extends StatelessWidget {
   final IconData icon;
   final String label;
+  final VoidCallback onTap;
 
-  const _StatusIcon({required this.icon, required this.label});
+  const _StatusIcon({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Icon(icon, color: AppColors.primary, size: 30),
-        const SizedBox(height: 6),
-        Text(label, style: AppTextStyles.caption),
-      ],
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(8),
+      child: Column(
+        children: [
+          Icon(icon, color: AppColors.softPastelGreen, size: 30),
+          const SizedBox(height: 6),
+          Text(label, style: AppTextStyles.caption),
+        ],
+      ),
     );
   }
 }

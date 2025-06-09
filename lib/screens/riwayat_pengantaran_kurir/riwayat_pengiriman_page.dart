@@ -5,13 +5,17 @@ import 'package:reuse_mart_mobile/screens/riwayat_pengantaran_kurir/card_riwayat
 import 'package:reuse_mart_mobile/utils/app_theme.dart';
 
 class RiwayatPengirimanKurirPage extends StatefulWidget {
-  const RiwayatPengirimanKurirPage({super.key});
+  final String? initialStatus;
+
+  const RiwayatPengirimanKurirPage({super.key, this.initialStatus});
 
   @override
-  State<RiwayatPengirimanKurirPage> createState() => _RiwayatPengirimanKurirPageState();
+  State<RiwayatPengirimanKurirPage> createState() =>
+      _RiwayatPengirimanKurirPageState();
 }
 
-class _RiwayatPengirimanKurirPageState extends State<RiwayatPengirimanKurirPage> {
+class _RiwayatPengirimanKurirPageState
+    extends State<RiwayatPengirimanKurirPage> {
   final List<String> _statusList = [
     'Semua',
     'Menunggu Kurir',
@@ -28,6 +32,10 @@ class _RiwayatPengirimanKurirPageState extends State<RiwayatPengirimanKurirPage>
   @override
   void initState() {
     super.initState();
+    if (widget.initialStatus != null &&
+        _statusList.contains(widget.initialStatus)) {
+      _selectedStatus = widget.initialStatus!;
+    }
     _fetchData();
   }
 
@@ -47,21 +55,22 @@ class _RiwayatPengirimanKurirPageState extends State<RiwayatPengirimanKurirPage>
     if (_selectedStatus == 'Semua') {
       _filteredList = _pengirimanList;
     } else {
-      _filteredList = _pengirimanList
-          .where((p) => p.statusPengiriman == _selectedStatus)
-          .toList();
+      _filteredList =
+          _pengirimanList
+              .where((p) => p.statusPengiriman == _selectedStatus)
+              .toList();
     }
   }
 
   Future<void> _selesaikanPengiriman(String idPenjualan) async {
     try {
-      final success = await KurirService.updateStatusPengiriman(
-        idPenjualan,
-      );
+      final success = await KurirService.updateStatusPengiriman(idPenjualan);
 
       if (success == 'Pengiriman berhasil dikonfirmasi selesai' && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Pengiriman berhasil dikonfirmasi selesai')),
+          const SnackBar(
+            content: Text('Pengiriman berhasil dikonfirmasi selesai'),
+          ),
         );
         _fetchData();
       } else if (mounted) {
@@ -89,7 +98,10 @@ class _RiwayatPengirimanKurirPageState extends State<RiwayatPengirimanKurirPage>
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text('Riwayat Pengiriman', style: AppTextStyles.appBarText),
+        title: const Text(
+          'Riwayat Pengiriman',
+          style: AppTextStyles.appBarText,
+        ),
       ),
       body: Column(
         children: [
@@ -117,7 +129,10 @@ class _RiwayatPengirimanKurirPageState extends State<RiwayatPengirimanKurirPage>
                     decoration: BoxDecoration(
                       border: Border(
                         bottom: BorderSide(
-                          color: isSelected ? AppColors.primary : Colors.transparent,
+                          color:
+                              isSelected
+                                  ? AppColors.primary
+                                  : Colors.transparent,
                           width: 3,
                         ),
                       ),
@@ -126,8 +141,12 @@ class _RiwayatPengirimanKurirPageState extends State<RiwayatPengirimanKurirPage>
                       status,
                       style: TextStyle(
                         fontSize: 15,
-                        fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                        color: isSelected ? AppColors.primary : Colors.grey.shade700,
+                        fontWeight:
+                            isSelected ? FontWeight.w600 : FontWeight.normal,
+                        color:
+                            isSelected
+                                ? AppColors.primary
+                                : Colors.grey.shade700,
                       ),
                     ),
                   ),
@@ -135,28 +154,30 @@ class _RiwayatPengirimanKurirPageState extends State<RiwayatPengirimanKurirPage>
               },
             ),
           ),
-          
+
           Expanded(
-            child: _isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : _filteredList.isEmpty
-                    ? const Center(
-                        child: Text('Tidak ada pengiriman'),
-                      )
+            child:
+                _isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : _filteredList.isEmpty
+                    ? const Center(child: Text('Tidak ada pengiriman'))
                     : ListView.builder(
-                        padding: const EdgeInsets.all(16),
-                        itemCount: _filteredList.length,
-                        itemBuilder: (context, index) {
-                          final pengiriman = _filteredList[index];
-                          return RiwayatPengirimanCard(
-                            pengiriman: pengiriman,
-                            onSelesaiPressed:
-                                pengiriman.statusPengiriman == "Diambil oleh kurir"
-                                    ? () => _selesaikanPengiriman(pengiriman.idPenjualan)
-                                    : null,
-                          );
-                        },
-                      ),
+                      padding: const EdgeInsets.all(16),
+                      itemCount: _filteredList.length,
+                      itemBuilder: (context, index) {
+                        final pengiriman = _filteredList[index];
+                        return RiwayatPengirimanCard(
+                          pengiriman: pengiriman,
+                          onSelesaiPressed:
+                              pengiriman.statusPengiriman ==
+                                      "Diambil oleh kurir"
+                                  ? () => _selesaikanPengiriman(
+                                    pengiriman.idPenjualan,
+                                  )
+                                  : null,
+                        );
+                      },
+                    ),
           ),
         ],
       ),
