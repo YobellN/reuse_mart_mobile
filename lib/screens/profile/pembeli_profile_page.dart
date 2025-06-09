@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:reuse_mart_mobile/models/pembeli.dart';
 import 'package:reuse_mart_mobile/screens/riwayat_transaksi_pembeli/riwayat_pembelian.dart';
+import 'package:reuse_mart_mobile/services/auth_service.dart';
 import 'package:reuse_mart_mobile/services/pembeli_service.dart';
 import 'package:reuse_mart_mobile/utils/app_theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -57,12 +58,6 @@ class _PembeliProfileContentState extends State<PembeliProfileContent> {
     });
   }
 
-  void logout(BuildContext context) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('token');
-    await prefs.remove('role');
-    Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
-  }
 
   final features = [
     {'icon': Icons.share, 'title': 'Affiliate commission', 'isNew': true},
@@ -238,7 +233,7 @@ class _PembeliProfileContentState extends State<PembeliProfileContent> {
           child: SizedBox(
             width: double.infinity,
             child: ElevatedButton.icon(
-              onPressed: () => logout(context),
+              onPressed: () => AuthService.logout(context),
               icon: const Icon(Icons.logout, color: Colors.white),
               label: const Text(
                 "Logout",

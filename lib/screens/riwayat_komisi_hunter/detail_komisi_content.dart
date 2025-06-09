@@ -232,42 +232,6 @@ class DetailKomisiContent extends StatelessWidget {
       ),
     );
   }
-
-  Widget _divider() {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 6),
-      width: double.infinity,
-      height: 0.7,
-      color: Colors.grey.shade300,
-    );
-  }
-
-  Widget _rowItem(String label, String value, {Color? valueColor}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        children: [
-          Expanded(
-            child: Text(
-              label,
-              style: const TextStyle(
-                fontSize: 13,
-                color: AppColors.textPrimary,
-              ),
-            ),
-          ),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w500,
-              color: valueColor ?? AppColors.textPrimary,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }
 
 class _InfoRow extends StatelessWidget {

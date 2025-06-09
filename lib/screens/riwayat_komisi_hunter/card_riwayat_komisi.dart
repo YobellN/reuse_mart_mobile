@@ -25,7 +25,6 @@ class RiwayatKomisiCard extends StatelessWidget {
             .first
             .pathFoto;
     final fotoProduk = '${Api.storageUrl}foto_produk/$pathFoto';
-    final penitip = produk.detailPenitipan.penitipan.penitip;
     final String status;
 
     if (produk.statusAkhirProduk == 'Diambil' ||
