@@ -7,10 +7,18 @@ import 'package:reuse_mart_mobile/utils/app_theme.dart';
 class DetailPesananContent extends StatelessWidget {
 final Penjualan penjualan;
 
-  const DetailPesananContent({super.key, required this.penjualan});
+  DetailPesananContent({super.key, required this.penjualan});
+
+  final currencyFormatter = NumberFormat.currency(
+    locale: 'id_ID',
+    symbol: 'Rp',
+    decimalDigits: 0,
+  );
+ 
 
   @override
   Widget build(BuildContext context) {
+   
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
       child: Column(
@@ -269,7 +277,7 @@ final Penjualan penjualan;
                           ),
                           TextSpan(
                             text:
-                                ' (Diskon Rp${penjualan.poinPotongan * 10000})',
+                                ' (Diskon ${currencyFormatter.format(penjualan.poinPotongan * 100)})',
                           ),
                         ],
                       ),
@@ -342,14 +350,22 @@ final Penjualan penjualan;
                 ),
                 _rowItem(
                   'Subtotal',
-                  'Rp${penjualan.detailProduk.fold<int>(0, (sum, item) => sum + item.hargaProduk)}',
+                  currencyFormatter.format(
+                    penjualan.detailProduk.fold<int>(
+                      0,
+                      (sum, item) => sum + item.hargaProduk,
+                    ),
+                  ),
                 ),
                 _rowItem(
                   'Diskon',
-                  'Rp${penjualan.poinPotongan * 10000}',
+                  currencyFormatter.format(penjualan.poinPotongan * 100),
                   valueColor: Colors.red,
                 ),
-                _rowItem('Ongkos Kirim', 'Rp${penjualan.totalOngkir}'),
+                _rowItem(
+                  'Ongkos Kirim',
+                  currencyFormatter.format(penjualan.totalOngkir),
+                ),
               ],
             ),
           ),
@@ -384,7 +400,8 @@ final Penjualan penjualan;
                   ),
                 ),
                 Text(
-                  penjualan.totalHarga.toString(),
+                  currencyFormatter.format(penjualan.totalHarga),
+                  // penjualan.totalHarga.toString(),
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
