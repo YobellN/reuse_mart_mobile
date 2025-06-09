@@ -51,7 +51,7 @@ String formatHarga(value) {
 String formatTanggal(dynamic value) {
   try {
     final date = value is DateTime ? value : DateTime.parse(value.toString());
-    return DateFormat('dd MMM yyyy').format(date);
+    return DateFormat('dd MMM yyyy', 'ID').format(date);
   } catch (e) {
     return '-';
   }

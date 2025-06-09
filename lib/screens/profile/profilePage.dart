@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:reuse_mart_mobile/screens/profile/hunterProfilePage.dart';
+import 'package:reuse_mart_mobile/screens/profile/hunter_profile_page.dart';
 import 'package:reuse_mart_mobile/screens/profile/kurirProfilePage.dart';
 import 'package:reuse_mart_mobile/screens/profile/pembeli_profile_page.dart';
 import 'package:reuse_mart_mobile/screens/profile/penitip_profile_page.dart';

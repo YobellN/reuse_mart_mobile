@@ -1,32 +1,62 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:reuse_mart_mobile/models/pegawai.dart';
+import 'package:reuse_mart_mobile/screens/riwayat_pengantaran_kurir/riwayat_pengiriman_page.dart';
+import 'package:reuse_mart_mobile/services/auth_service.dart';
+import 'package:reuse_mart_mobile/services/kurir_service.dart';
 import 'package:reuse_mart_mobile/utils/app_theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
-class KurirProfilePage extends StatelessWidget {
-  KurirProfilePage({super.key});
+class KurirProfilePage extends StatefulWidget {
+  // final String name;
+  // final String email;
+  // final String? photoUrl;
 
-  final features = [
-    {'icon': Icons.share, 'title': 'Affiliate commission', 'isNew': true},
-    {'icon': Icons.pan_tool_alt, 'title': 'Referral', 'isNew': true},
-    {'icon': Icons.card_giftcard, 'title': 'Scratch & Win', 'isNew': true},
-  ];
+  const KurirProfilePage({
+    super.key,
+    // required this.name,
+    // required this.email,
+    // this.photoUrl,
+  });
 
-  void logout(BuildContext context) async {
+  @override
+  State<KurirProfilePage> createState() => _KurirProfilePageState();
+}
+
+class _KurirProfilePageState extends State<KurirProfilePage> {
+  Pegawai? _pegawai;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    getKurir();
+  }
+
+  Future<void> getKurir() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('token');
-    await prefs.remove('role');
-    Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
+    final cached = prefs.getString('cached_kurir');
+    if (cached != null) {
+      if (!mounted) return;
+      setState(() {
+        _pegawai = Pegawai.fromJson(jsonDecode(cached));
+        _isLoading = false;
+      });
+    }
+    final fresh = await KurirService.getKurir();
+    if (fresh != null) {
+      if (!mounted) return;
+      setState(() {
+        _pegawai = fresh;
+        _isLoading = false;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    // Data dummy
-    final String name = "Budi Penitip";
-    final String email = "budi@example.com";
-    final String phone = "081234567890";
-    final int poin = 120;
-    final double saldo = 185000;
-
     return Column(
       children: [
         Stack(
@@ -35,130 +65,96 @@ class KurirProfilePage extends StatelessWidget {
             Container(height: 120, color: AppColors.primary),
             Padding(
               padding: const EdgeInsets.only(top: 30, left: 18, right: 18),
-              child: Column(
-                children: [
-                  Container(
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: const Color.fromARGB(255, 213, 213, 213),
-                        width: 1,
-                      ),
-                      boxShadow: [
-                        BoxShadow(color: Colors.black12, blurRadius: 4),
-                      ],
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.only(
-                        top: 60,
-                        bottom: 24,
-                        left: 16,
-                        right: 16,
-                      ),
-                      child: Column(
-                        children: [
-                          Text(
-                            name,
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.textPrimary,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(phone, style: AppTextStyles.body),
-                          const SizedBox(height: 2),
-                          Text(email, style: AppTextStyles.caption),
-                          const SizedBox(height: 16),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 12,
-                                    horizontal: 12,
-                                  ),
-                                  margin: const EdgeInsets.only(right: 8),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.lightMintGreen,
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        "Poin",
-                                        style: AppTextStyles.bodyBold,
-                                      ),
-                                      const SizedBox(height: 8),
-                                      Row(
-                                        children: [
-                                          const Icon(
-                                            Icons.workspace_premium,
-                                            color: AppColors.softPastelGreen,
-                                          ),
-                                          const SizedBox(width: 8),
-                                          Text(
-                                            poin.toString(),
-                                            style: AppTextStyles.body.copyWith(
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 12,
-                                    horizontal: 12,
-                                  ),
-                                  margin: const EdgeInsets.only(left: 8),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.lightMintGreen,
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        "Saldo",
-                                        style: AppTextStyles.bodyBold,
-                                      ),
-                                      const SizedBox(height: 8),
-                                      Row(
-                                        children: [
-                                          const Icon(
-                                            Icons.account_balance_wallet,
-                                            color: AppColors.softPastelGreen,
-                                          ),
-                                          const SizedBox(width: 8),
-                                          Text(
-                                            'Rp ${saldo.toStringAsFixed(0)}',
-                                            style: AppTextStyles.body.copyWith(
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
+              child: Skeletonizer(
+                enabled: _isLoading,
+                child: Column(
+                  children: [
+                    Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: const Color.fromARGB(255, 213, 213, 213),
+                          width: 1,
+                        ),
+                        boxShadow: [
+                          BoxShadow(color: Colors.black12, blurRadius: 4),
                         ],
                       ),
+                      child: Padding(
+                        padding: const EdgeInsets.only(
+                          top: 60,
+                          bottom: 24,
+                          left: 16,
+                          right: 16,
+                        ),
+                        child: Column(
+                          children: [
+                            Text(
+                              _pegawai?.user.nama ?? 'Memuat...',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.textPrimary,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              _pegawai?.user.noTelp ?? '',
+                              style: AppTextStyles.body,
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              _pegawai?.user.email ?? 'Memuat...',
+                              style: AppTextStyles.caption,
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              'Tanggal Lahir: ${formatTanggal(_pegawai?.tanggalLahir)}',
+                              style: AppTextStyles.caption,
+                            ),
+                            const SizedBox(height: 16),
+                            // Tombol History Pengiriman
+                            Container(
+                              width: double.infinity,
+                              child: ElevatedButton.icon(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder:
+                                          (context) =>
+                                              const RiwayatPengirimanKurirPage(),
+                                    ),
+                                  );
+                                },
+                                icon: Icon(
+                                  Icons.local_shipping,
+                                  color: Colors.white,
+                                ),
+                                label: Text(
+                                  "Riwayat Pengiriman",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.primary,
+                                  padding: EdgeInsets.symmetric(vertical: 12),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
             Positioned(
@@ -176,7 +172,7 @@ class KurirProfilePage extends StatelessWidget {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     image: DecorationImage(
-                      image: AssetImage('assets/icons/penitip.webp'),
+                      image: AssetImage('assets/icons/hunter.webp'),
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -187,54 +183,18 @@ class KurirProfilePage extends StatelessWidget {
         ),
         const SizedBox(height: 16),
 
-        // SECTION MENU PROFIL
-        const PesananSayaSection(),
+        // Section Info Pengiriman
+        DeliveryStatusSection(),
         const SizedBox(height: 16),
 
-        // SECTION INFO UMUM
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
-          decoration: const BoxDecoration(color: Colors.white),
-          child: Column(
-            children:
-                features.map((feature) {
-                  return Column(
-                    children: [
-                      ListTile(
-                        leading: Icon(
-                          feature['icon'] as IconData,
-                          color: Colors.grey.shade700,
-                        ),
-                        title: Row(
-                          children: [
-                            Text(
-                              feature['title'] as String,
-                              style: AppTextStyles.body,
-                            ),
-                          ],
-                        ),
-                        trailing: const Icon(Icons.chevron_right),
-                        onTap: () {
-                          // TODO: Add navigation
-                        },
-                      ),
-                      if (feature != features.last)
-                        Divider(height: 1, color: Colors.grey.shade300),
-                    ],
-                  );
-                }).toList(),
-          ),
-        ),
-        const SizedBox(height: 16),
-
-        // TOMBOL LOGOUT
+        //TOMBOL LOGOUT
         Container(
           padding: const EdgeInsets.all(16),
           decoration: const BoxDecoration(color: Colors.white),
           child: SizedBox(
             width: double.infinity,
             child: ElevatedButton.icon(
-              onPressed: () => logout(context),
+              onPressed: () => AuthService.logout(context),
               icon: const Icon(Icons.logout, color: Colors.white),
               label: const Text(
                 "Logout",
@@ -260,8 +220,8 @@ class KurirProfilePage extends StatelessWidget {
   }
 }
 
-class PesananSayaSection extends StatelessWidget {
-  const PesananSayaSection({super.key});
+class DeliveryStatusSection extends StatelessWidget {
+  const DeliveryStatusSection({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -276,7 +236,7 @@ class PesananSayaSection extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                "Shopping order",
+                "Status Pengiriman",
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w600,
@@ -286,14 +246,16 @@ class PesananSayaSection extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 24),
-
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: const [
-              _OrderIcon(icon: Icons.payments_outlined, label: 'Waiting'),
-              _OrderIcon(icon: Icons.inventory_2_outlined, label: 'Current'),
-              _OrderIcon(icon: Icons.inventory_2, label: 'Completed'),
-              _OrderIcon(icon: Icons.reviews, label: 'Review'),
+              _StatusIcon(icon: Icons.pending_outlined, label: 'Menunggu'),
+              _StatusIcon(
+                icon: Icons.local_shipping_outlined,
+                label: 'Diantar',
+              ),
+              _StatusIcon(icon: Icons.check_circle_outline, label: 'Selesai'),
+              _StatusIcon(icon: Icons.cancel_outlined, label: 'Dibatalkan'),
             ],
           ),
         ],
@@ -302,17 +264,17 @@ class PesananSayaSection extends StatelessWidget {
   }
 }
 
-class _OrderIcon extends StatelessWidget {
+class _StatusIcon extends StatelessWidget {
   final IconData icon;
   final String label;
 
-  const _OrderIcon({required this.icon, required this.label});
+  const _StatusIcon({required this.icon, required this.label});
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Icon(icon, color: AppColors.softPastelGreen, size: 30),
+        Icon(icon, color: AppColors.primary, size: 30),
         const SizedBox(height: 6),
         Text(label, style: AppTextStyles.caption),
       ],

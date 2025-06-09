@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:reuse_mart_mobile/models/produk.dart';
 import 'package:reuse_mart_mobile/screens/catalogue/detail_produk_page.dart';
+import 'package:reuse_mart_mobile/screens/catalogue/skeleton_image.dart';
 import 'package:reuse_mart_mobile/services/product_service.dart';
 import 'package:reuse_mart_mobile/utils/api.dart';
 import 'package:reuse_mart_mobile/utils/app_theme.dart';
@@ -279,40 +280,19 @@ class _KatalogPageState extends State<KatalogPage> {
                   borderRadius: const BorderRadius.vertical(
                     top: Radius.circular(10),
                   ),
-                  child:
-                      foto != null
-                          ? Image.network(
-                            '${Api.storageUrl}foto_produk/$foto',
-                            height: 140,
-                            width: double.infinity,
-                            fit: BoxFit.cover,
-                            loadingBuilder: (context, child, loadingProgress) {
-                              if (loadingProgress == null) return child;
-                              return Image(
-                                image: const AssetImage(
-                                  'assets/icons/reuse-mart-icon.png',
-                                ),
-                                height: 140,
-                                width: double.infinity,
-                                fit: BoxFit.cover,
-                              );
-                            },
-                            errorBuilder:
-                                (context, error, stackTrace) => Image(
-                                  image: const AssetImage(
-                                    'assets/icons/reuse-mart-icon.png',
-                                  ),
-                                  height: 140,
-                                  width: double.infinity,
-                                  fit: BoxFit.cover,
-                                ),
-                          )
-                          : Image.asset(
-                            'assets/images/reuse-mart.png',
-                            height: 140,
-                            width: double.infinity,
-                            fit: BoxFit.cover,
-                          ),
+                  child: foto != null
+                      ? SkeletonImage(
+                          imageUrl: '${Api.storageUrl}foto_produk/$foto',
+                          width: double.infinity,
+                          height: 140,
+                          borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
+                        )
+                      : Image.asset(
+                          'assets/icons/reuse-mart-icon.png',
+                          height: 140,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                        ),
                 ),
                 if (product.waktuGaransi != null)
                   Positioned(
@@ -572,3 +552,4 @@ class _KatalogPageState extends State<KatalogPage> {
     );
   }
 }
+

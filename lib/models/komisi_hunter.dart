@@ -1,11 +1,11 @@
 import 'package:reuse_mart_mobile/models/detail_penjualan.dart';
 
 class KomisiHunter {
-  final String idDetailPenjualan;
+  final int idDetailPenjualan;
   final String idPenitip;
-  final String idHunter;
-  final double komisiHunter;
-  final DetailPenjualan detailPenjualan;
+  final String? idHunter;
+  final double? komisiHunter;
+  final DetailPenjualan? detailPenjualan;
 
   KomisiHunter({
     required this.idDetailPenjualan,
@@ -19,9 +19,9 @@ class KomisiHunter {
     return KomisiHunter(
       idDetailPenjualan: json['id_detail_penjualan'],
       idPenitip: json['id_penitip'],
-      idHunter: json['id_hunter'],
-      komisiHunter: json['komisi_hunter'],
-      detailPenjualan: DetailPenjualan.fromJson(json['detail_penjualan']),
+      idHunter: json['id_hunter'] ?? null,
+      komisiHunter: json['komisi_hunter']?.toDouble(),
+      detailPenjualan: json['detail_penjualan'] != null ? DetailPenjualan.fromJson(json['detail_penjualan']) : null,
     );
   }
 }

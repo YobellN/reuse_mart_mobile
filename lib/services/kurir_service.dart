@@ -1,12 +1,13 @@
 import 'dart:convert';
 
 import 'package:reuse_mart_mobile/models/pegawai.dart';
-import 'package:reuse_mart_mobile/models/produk_hunter.dart';
+import 'package:reuse_mart_mobile/models/kurir.dart';
 import 'package:reuse_mart_mobile/utils/api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:developer' as developer;
 
-class HunterService {
-  static Future<Pegawai?> getHunter() async {
+class KurirService {
+  static Future<Pegawai?> getKurir() async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('token');
@@ -14,7 +15,7 @@ class HunterService {
       if (token == null) return null;
 
       final response = await Api.get(
-        'hunter/get-pegawai',
+        'kurir/get-pegawai',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
@@ -26,7 +27,7 @@ class HunterService {
         final Map<String, dynamic> jsonBody = json.decode(response.body);
         if (jsonBody.containsKey('data')) {
           final prefs = await SharedPreferences.getInstance();
-          prefs.setString('cached_hunter', json.encode(jsonBody['data']));
+          prefs.setString('cached_kurir', json.encode(jsonBody['data']));
           return Pegawai.fromJson(jsonBody['data']);
         }
       }
@@ -37,7 +38,7 @@ class HunterService {
     }
   }
 
-  static Future<List<ProdukHunter>> getRiwayatBarangHunting({String? status}) async {
+  static Future<List<PengirimanKurir>> getRiwayatPengiriman() async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('token');
@@ -45,30 +46,55 @@ class HunterService {
       if (token == null) return [];
 
       final response = await Api.get(
-        'hunter/get-barang-hunting',
+        'kurir/getPengirimanKurir',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
           'Authorization': 'Bearer $token',
         },
-        params: status != null && status != 'Semua' ? {'status': status} : null,
       );
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> jsonBody = json.decode(response.body);
         if (jsonBody.containsKey('data')) {
-          final prefs = await SharedPreferences.getInstance();
-          prefs.setString('cached_riwayat_barang_hunting${'_$status'}', json.encode(jsonBody['data']));
-          final dataList = jsonBody['data'] as List;
-          final data = dataList.map((item) => ProdukHunter.fromJson(item)).toList();
-          return data;
+          final List<dynamic> pengirimanList = jsonBody['data'];
+          return pengirimanList
+              .map((json) => PengirimanKurir.fromJson(json))
+              .toList();
         }
       }
-      
       return [];
     } catch (e) {
-      print('Failed to fetch riwayat barang huntings: ${e..toString()}');
       return [];
+    }
+  }
+
+  static Future<String> updateStatusPengiriman(String idPenjualan) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
+      if (token == null) return '';
+
+      final response = await Api.post(
+        'kurir/konfirmasiSelesaiPengiriman/$idPenjualan',
+        {},
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+      if (response.statusCode == 200) {
+        return json.decode(response.body)['message'];
+      }
+      return json.decode(response.body)['message'];
+    } catch (e) {
+      developer.log('klaimMerchandise error', error: e);
+      try {
+        return json.decode(e.toString())['message'];
+      } catch (_) {
+        return 'An error occurred.';
+      }
     }
   }
 }
