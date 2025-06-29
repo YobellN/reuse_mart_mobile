@@ -50,8 +50,8 @@ class ProdukHunter {
       rating:
           json['rating'] != null ? (json['rating'] as num).toDouble() : null,
       kategori: Kategori.fromJson(json['kategori']),
-      detailPenitipan: DetailPenitipan.fromJson(json['detail_penitipan']),
-      fotoProduk:(json['foto_produk'] as List).map((e) => FotoProduk.fromJson(e)).toList(),
+      detailPenitipan: DetailPenitipan.fromJson(json['detail_penitipan']) ,
+      fotoProduk:json['foto_produk'] != null ? (json['foto_produk'] as List).map((e) => FotoProduk.fromJson(e)).toList() : [],
       detailPenjualan: json['detail_penjualan'] != null ? DetailPenjualan.fromJson(json['detail_penjualan']) : null,
     );
   }
