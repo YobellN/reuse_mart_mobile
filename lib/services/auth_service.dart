@@ -4,6 +4,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:reuse_mart_mobile/services/globals.dart';
+import 'package:reuse_mart_mobile/utils/api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
@@ -14,7 +15,7 @@ class AuthService {
   ) async {
     Map data = {'email': email, 'password': password, 'fcmToken': fcmToken};
     var body = json.encode(data);
-    var url = Uri.parse('${baseURL}loginMobile');
+    var url = Uri.parse('${Api.baseUrl}/loginMobile');
     http.Response response = await http.post(url, headers: headers, body: body);
     return response;
   }
