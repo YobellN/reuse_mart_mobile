@@ -129,7 +129,7 @@ class _KatalogMerchPageState extends State<KatalogMerchPage> {
               ),
               child: SkeletonImage(
                 imageUrl:
-                    '${Api.storageUrl}foto_merchandise/${merchandise.fotoMerchandise}',
+                    '${Api.storageUrl}/${merchandise.fotoMerchandise}',
                 width: double.infinity,
                 height: 140,
                 borderRadius: const BorderRadius.vertical(

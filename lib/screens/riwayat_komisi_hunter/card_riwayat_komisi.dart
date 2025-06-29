@@ -19,12 +19,12 @@ class RiwayatKomisiCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final pathFoto =
-        produk.fotoProduk
-            .where((element) => element.thumbnail == 1)
-            .first
-            .pathFoto;
-    final fotoProduk = '${Api.storageUrl}foto_produk/$pathFoto';
+    final pathFoto = produk.fotoProduk.any((element) => element.thumbnail == 1)
+        ? produk.fotoProduk
+            .firstWhere((element) => element.thumbnail == 1)
+            .pathFoto
+        : 'assets/images/reuse-mart.png';
+    final fotoProduk = '${Api.storageUrl}/$pathFoto';
     final String status;
 
     if (produk.statusAkhirProduk == 'Diambil' ||

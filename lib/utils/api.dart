@@ -2,8 +2,8 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Api {
-  static const String baseUrl = 'http://10.0.2.2:8000/api'; 
-  static const String storageUrl = 'http://10.0.2.2:8000/storage/';
+  static const String baseUrl = 'https://reuse-mart-backend.thankfulgrass-c713c300.southeastasia.azurecontainerapps.io/api'; 
+  static const String storageUrl = 'https://reusemartstorage.blob.core.windows.net/public';
 
   static Future<http.Response> get(
     String endpoint, {

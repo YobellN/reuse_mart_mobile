@@ -107,7 +107,7 @@ class RiwayatPembelianCard extends StatelessWidget {
                               child:
                                   produk.fotoProduk.isNotEmpty
                                       ? Image.network(
-                                        '${Api.storageUrl}foto_produk/${produk.fotoProduk.first.pathFoto}',
+                                        '${Api.storageUrl}/${produk.fotoProduk.first.pathFoto}',
                                         width: 85,
                                         height: 85,
                                         fit: BoxFit.cover,

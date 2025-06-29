@@ -250,7 +250,7 @@ class DetailProdukContent extends StatelessWidget {
                       return ClipRRect(
                         borderRadius: BorderRadius.circular(8),
                         child: Image.network(
-                          '${Api.storageUrl}foto_produk/${foto.pathFoto}',
+                          '${Api.storageUrl}/${foto.pathFoto}',
                           fit: BoxFit.cover,
                           errorBuilder:
                               (context, error, stackTrace) => Image.asset(

@@ -280,7 +280,7 @@ class _KatalogPageState extends State<KatalogPage> {
                   ),
                   child: foto != null
                       ? SkeletonImage(
-                          imageUrl: '${Api.storageUrl}foto_produk/$foto',
+                          imageUrl: '${Api.storageUrl}/$foto',
                           width: double.infinity,
                           height: 140,
                           borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),

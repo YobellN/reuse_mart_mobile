@@ -130,7 +130,7 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
             child: GestureDetector(
               onTap:
                   () => _showImageDialog(
-                    '${Api.storageUrl}foto_produk/${fotoList[_currentImage].pathFoto}',
+                    '${Api.storageUrl}/${fotoList[_currentImage].pathFoto}',
                   ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(16),
@@ -141,7 +141,7 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                   itemBuilder: (context, idx) {
                     final foto = fotoList[idx].pathFoto;
                     return Image.network(
-                      '${Api.storageUrl}foto_produk/$foto',
+                      '${Api.storageUrl}/$foto',
                       fit: BoxFit.cover,
                       loadingBuilder: (context, child, loadingProgress) {
                         if (loadingProgress == null) return child;
@@ -222,7 +222,7 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(8),
                         child: Image.network(
-                          '${Api.storageUrl}foto_produk/$foto',
+                          '${Api.storageUrl}/$foto',
                           height: 56,
                           width: 56,
                           fit: BoxFit.cover,
@@ -621,7 +621,7 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                           child:
                               foto != null
                                   ? Image.network(
-                                    '${Api.storageUrl}foto_produk/$foto',
+                                    '${Api.storageUrl}/$foto',
                                     height: 110,
                                     width: double.infinity,
                                     fit: BoxFit.cover,
