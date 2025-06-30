@@ -5,6 +5,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:reuse_mart_mobile/screens/home/home_page.dart';
 import 'package:reuse_mart_mobile/screens/notification-screen.dart';
 import 'package:reuse_mart_mobile/screens/onboarding_screen/onboarding_screen.dart';
+import 'package:flutter/services.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -43,6 +44,9 @@ void main() async {
     await prefs.setString('fcmToken', fcmToken);
   }
 
+  WidgetsFlutterBinding.ensureInitialized();
+  
+
   if (token != null) {
     runApp(MyApp(initialRoute: '/home'));
   } else {
@@ -50,6 +54,14 @@ void main() async {
   }
 
   runApp(MyApp());
+
+    SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      systemNavigationBarColor: AppColors.background, 
+      systemNavigationBarIconBrightness: Brightness.dark, 
+    ),
+  );
+  
   print('FCM Token: $fcmToken');
 }
 

@@ -231,8 +231,9 @@ class _PenitipProfileContentState extends State<PenitipProfileContent> {
                                             ),
                                             const SizedBox(width: 8),
                                             Text(
-                                              _penitip?.rating.toString() ??
-                                                  'Belum ada',
+                                              (_penitip?.rating == null || _penitip?.rating == 0)
+                                                  ? 'Belum ada'
+                                                  : _penitip?.rating.toString() ?? '0',
                                               style: AppTextStyles.body
                                                   .copyWith(
                                                     fontWeight: FontWeight.bold,

@@ -9,14 +9,11 @@ class TopSellerService {
   static Future<List<TopSeller>> fetchTopSellers() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('token');
 
-      if (token == null) return [];
 
       final response = await Api.get(
         'top-seller',
         headers: {
-          'Authorization': 'Bearer $token',
           'Accept': 'application/json',
         },
       );
@@ -33,7 +30,6 @@ class TopSellerService {
         throw Exception('Gagal memuat top seller: ${response.statusCode}');
       }
     } catch (e) {
-      print('TopSellerService error: $e');
       return [];
     }
   }

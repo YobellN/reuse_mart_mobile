@@ -4,11 +4,10 @@ import 'package:reuse_mart_mobile/screens/home/home_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:reuse_mart_mobile/utils/app_theme.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:reuse_mart_mobile/models/top_seller.dart';
 import 'package:reuse_mart_mobile/services/top_seller_service.dart';
-import 'package:intl/intl.dart';
-
 
 class InformasiPage extends StatefulWidget {
   final String role;
@@ -31,25 +30,39 @@ class _InformasiPageState extends State<InformasiPage> {
   }
 
   Future<void> fetchTopSellerData() async {
-    List<TopSeller> cached = await TopSellerService.getCachedTopSellers();
+    try {
+      List<TopSeller> cached = await TopSellerService.getCachedTopSellers();
 
-    if (cached.isNotEmpty) {
-      setState(() {
-        topSeller = cached.first;
-        isLoadingTopSeller = false;
-      });
-    }
+      if (cached.isNotEmpty) {
+        setState(() {
+          topSeller = cached.first;
+          isLoadingTopSeller = false;
+        });
+      }
 
-    List<TopSeller> fresh = await TopSellerService.fetchTopSellers();
+      List<TopSeller> fresh = await TopSellerService.fetchTopSellers();
 
-    if (fresh.isNotEmpty &&
-        fresh.first.idTopSeller != cached.first.idTopSeller) {
-      setState(() {
-        topSeller = fresh.first;
-      });
+      if (fresh.isNotEmpty) {
+        final isDifferent =
+            cached.isEmpty ||
+            fresh.first.idTopSeller != cached.first.idTopSeller;
+
+        if (isDifferent) {
+          setState(() {
+            topSeller = fresh.first;
+            isLoadingTopSeller = false;
+          });
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          topSeller = null;
+          isLoadingTopSeller = false;
+        });
+      }
     }
   }
-
 
   final List<CarouselData> carouselData = const [
     CarouselData(
@@ -134,125 +147,130 @@ class _InformasiPageState extends State<InformasiPage> {
     final bulanLalu = DateFormat('MMMM', 'id_ID').format(lastMonth);
 
     final sellerName = topSeller?.penitip.user.nama ?? 'Tidak ada top seller';
-    final rating = topSeller?.avgRating ?? 0.0;
+    final rating =
+        (topSeller?.avgRating != null && topSeller!.avgRating != 0)
+            ? topSeller!.avgRating
+            : 5.0;
     final jumlahTerjual = topSeller?.totalProduk ?? 0;
     final pendapatan = topSeller?.totalPenjualan ?? 0;
-   
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 18.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "Top Seller Bulan $bulanLalu",
-            style: const TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.w700,
-              color: AppColors.textPrimary,
-            ),
-          ),
-          const SizedBox(height: 16),
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFFFFF9C4), Color(0xFFFFFDE7)],
-                begin: Alignment.bottomLeft,
-                end: Alignment.topCenter,
+      child: Skeletonizer(
+        enabled: isLoadingTopSeller,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "Top Seller Bulan $bulanLalu",
+              style: const TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.w700,
+                color: AppColors.textPrimary,
               ),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.amber.shade300, width: 0.7),
             ),
-            child: Row(
-              children: [
-                Container(
-                  width: 72,
-                  height: 72,
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black12,
-                        blurRadius: 3,
-                        offset: Offset(0, 2),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFFFFF9C4), Color(0xFFFFFDE7)],
+                  begin: Alignment.bottomLeft,
+                  end: Alignment.topCenter,
+                ),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.amber, width: 0.7),
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    width: 72,
+                    height: 72,
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 3,
+                          offset: Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: Image.asset(
+                        'assets/homePage/badge.webp',
+                        fit: BoxFit.contain,
                       ),
-                    ],
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: Image.asset(
-                      'assets/homePage/badge.webp',
-                      fit: BoxFit.contain,
                     ),
                   ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        sellerName,
-                        style: const TextStyle(
-                          fontSize: 17,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textPrimary,
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          sellerName,
+                          style: const TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          const Icon(
-                            Icons.inventory_2,
-                            size: 16,
-                            color: Colors.green,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            "$jumlahTerjual produk terjual",
-                            style: const TextStyle(fontSize: 14),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          const Icon(
-                            Icons.attach_money,
-                            size: 16,
-                            color: Colors.green,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            "Penjualan $bulanLalu ${NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0).format(pendapatan)}",
-                            style: const TextStyle(fontSize: 14),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          const Icon(
-                            Icons.star,
-                            size: 16,
-                            color: Colors.orange,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            "$rating / 5.0",
-                            style: const TextStyle(fontSize: 14),
-                          ),
-                        ],
-                      ),
-                    ],
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.inventory_2,
+                              size: 16,
+                              color: Colors.green,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              "$jumlahTerjual produk terjual",
+                              style: const TextStyle(fontSize: 14),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.attach_money,
+                              size: 16,
+                              color: Colors.green,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              "Penjualan $bulanLalu ${NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0).format(pendapatan)}",
+                              style: const TextStyle(fontSize: 14),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.star,
+                              size: 16,
+                              color: Colors.orange,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              "$rating / 5.0",
+                              style: const TextStyle(fontSize: 14),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -838,7 +856,7 @@ class FeatureItem extends StatelessWidget {
                 ),
               ],
             ),
-          )
+          ),
         ],
       ),
     );
